@@ -7,8 +7,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Profile Page")),
-      bottomNavigationBar: buildBottomAppBar(context),
+      appBar: AppBar(title: Text("Profile Page"), automaticallyImplyLeading: false),
     );
   }
 

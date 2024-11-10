@@ -7,8 +7,7 @@ class SocialPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Social Page")),
-      bottomNavigationBar: buildBottomAppBar(context),
+      appBar: AppBar(title: Text("Social Page"), automaticallyImplyLeading: false,),
     );
   }
 

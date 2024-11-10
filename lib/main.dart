@@ -6,10 +6,11 @@ import 'package:flutter/material.dart';
 // -- our packages -- //
 
 // page routes
+import 'package:md_final/HomePage/home_page.dart';
 import 'package:md_final/nutrition_page/nutrition_page.dart';
 import 'package:md_final/profile_page/profile_page.dart';
 import 'package:md_final/social_page/social_page.dart';
-import 'workout_page/workout_page.dart';
+import 'package:md_final/workout_page/workout_page.dart';
 
 // helper functions
 import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
@@ -24,7 +25,7 @@ void main() {
   runApp(MaterialApp(
     initialRoute: '/home',
     routes: {
-      '/home': (context) => const HomePage(),
+      '/home': (context) => const HomeNavigator(),
       '/nutrition': (context) => const NutritionPage(),
       '/profile': (context) => const ProfilePage(),
       '/workout': (context) => const WorkoutPage(),
@@ -33,23 +34,44 @@ void main() {
   ));
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeNavigator extends StatefulWidget {
+  const HomeNavigator({super.key});
+
+  @override
+  State<HomeNavigator> createState() => _HomeNavigatorState();
+}
+
+class _HomeNavigatorState extends State<HomeNavigator> {
+  int _currentPageIndex = 0;
+
+  //list of pages
+  final List<Widget> _pages = [
+    HomePage(),
+    NutritionPage(),
+    WorkoutPage(),
+    SocialPage(),
+    ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildTopAppBar(),
-      bottomNavigationBar: buildBottomAppBar(context),
-      body: Text("hello!")
+      bottomNavigationBar: BuildBottomNavigationBar(onTap: _onNavigationButtonTap, getIndex: _getCurrentSelectedIndex),
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: _pages,
+      ),
     );
   }
 
-  AppBar _buildTopAppBar() {
-    return AppBar(
-      title: const Text('Workout App'),
-      backgroundColor: Colors.green,
-    );
+  void _onNavigationButtonTap(int index) {
+    setState(() {
+      _currentPageIndex = index;
+    });
+  }
+
+  int _getCurrentSelectedIndex() {
+    return _currentPageIndex;
   }
 
 }

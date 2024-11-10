@@ -7,8 +7,7 @@ class WorkoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Workout Page")),
-      bottomNavigationBar: buildBottomAppBar(context),
+      appBar: AppBar(title: Text("Workout Page"), automaticallyImplyLeading: false),
     );
   }
 

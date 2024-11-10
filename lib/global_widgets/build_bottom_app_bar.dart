@@ -1,53 +1,83 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 
-BottomAppBar buildBottomAppBar(BuildContext context) {
-  log(ModalRoute.of(context)!.debugLabel, name: "bottom app bar");
+const List<IconData> constIconFilledList = [
+  Icons.home,
+  Icons.dining,
+  Icons.local_fire_department,
+  Icons.people,
+  Icons.person,
+];
 
-  return BottomAppBar(
-    color: Colors.blue,
-    child: Row(
-      children: <Widget> [
-        IconButton(
-          tooltip: 'Home',
-          icon: const Icon(Icons.home_outlined),
-          onPressed: () {
-            // if (Navigator.canPop(context)) Navigator.pop(context); //pop current page
-            // Navigator.pushNamed(context, '/home');
-            Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-          },
-        ),
-        IconButton(
-          tooltip: 'Nutrition',
-          icon: const Icon(Icons.dining_outlined),
-          onPressed: () {
-            // if (Navigator.canPop(context)) Navigator.pop(context); //pop current page
-            // Navigator.pushNamed(context, '/nutrition');
-            Navigator.pushNamedAndRemoveUntil(context, '/nutrition', (Route<dynamic> route) => false);
-          },
-        ),
-        IconButton(
-          tooltip: 'Start Workout',
-          icon: const Icon(Icons.local_fire_department_outlined),
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(context, '/workout', (Route<dynamic> route) => false);
-          },
-        ),
-        IconButton(
-          tooltip: 'Social',
-          icon: const Icon(Icons.people_outline),
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(context, '/social', (Route<dynamic> route) => false);
-          },
-        ),
-        IconButton(
-          tooltip: 'Profile',
-          icon: const Icon(Icons.person_outline),
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(context, '/profile', (Route<dynamic> route) => false);
-          },
-        ),
-      ],
-    ),
-  );
+const List<IconData> constIconOutlinedList = [
+  Icons.home_outlined,
+  Icons.dining_outlined,
+  Icons.local_fire_department_outlined,
+  Icons.people_outline,
+  Icons.person_outline,
+];
+
+class BuildBottomNavigationBar extends StatefulWidget {
+  final ValueChanged<int> onTap;
+  final Function getIndex;
+
+  const BuildBottomNavigationBar({super.key, required this.onTap, required this.getIndex});
+
+  @override
+  State<BuildBottomNavigationBar> createState() => _BuildBottomNavigationBarState();
 }
+
+class _BuildBottomNavigationBarState extends State<BuildBottomNavigationBar> {
+
+  // map containing the icons
+  List<IconData> iconList = [
+    Icons.home_outlined,
+    Icons.dining_outlined,
+    Icons.local_fire_department_outlined,
+    Icons.people_outline,
+    Icons.person_outline,
+  ];
+
+  @override
+  void initState() {
+    iconList[0] = constIconFilledList[0];
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return BottomNavigationBar(
+      currentIndex: widget.getIndex(),
+      onTap: (index) {
+        _onIconPress(index);
+      },
+      selectedItemColor: Colors.blue,
+      showSelectedLabels: true,
+      unselectedItemColor: Colors.black,
+      items: [
+      BottomNavigationBarItem(icon: Icon(iconList[0]), label: "Home"),
+      BottomNavigationBarItem(icon: Icon(iconList[1]), label: "Nutrition"),
+      BottomNavigationBarItem(icon: Icon(iconList[2]), label: "Workout"),
+      BottomNavigationBarItem(icon: Icon(iconList[3]), label: "Social"),
+      BottomNavigationBarItem(icon: Icon(iconList[4]), label: "Profile"),
+      ]
+    );
+
+  }
+
+  void _onIconPress(int index) {
+    widget.onTap(index);
+    setState(() {
+      for (int i = 0; i < iconList.length; i++) {
+        iconList[i] = constIconOutlinedList[i]; //reset outlined icons
+      }
+      iconList[index] = constIconFilledList[index];
+    });
+  }
+
+
+
+}
+
+
