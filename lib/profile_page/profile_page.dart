@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.blue,);
+    return Scaffold(
+      appBar: AppBar(title: Text("Profile Page")),
+      bottomNavigationBar: buildBottomAppBar(context),
+    );
   }
 
 }
