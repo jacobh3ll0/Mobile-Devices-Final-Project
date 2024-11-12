@@ -6,11 +6,11 @@
 // muscleWikiURL = "... an actual URL"
 // muscleGroup = "Chest"
 
-class ExerciseData {
-  int workoutId; //Primary key,
-  String workoutName;
-  String? muscleWikiURL;
-  String? muscleGroup;
-
-  ExerciseData({required this.workoutId, required this.workoutName});
-}
+// class ExerciseData {
+//   int workoutId; //Primary key,
+//   String workoutName;
+//   String? muscleWikiURL;
+//   String? muscleGroup;
+//
+//   ExerciseData({required this.workoutId, required this.workoutName});
+// }
