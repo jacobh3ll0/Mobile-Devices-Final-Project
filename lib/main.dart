@@ -18,8 +18,6 @@ import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
 // -----------------  //
 
 
-
-
 // function to trigger build when the app is run
 void main() {
   runApp(MaterialApp(
