@@ -1,12 +1,13 @@
+// -- Flutter/dart packages -- //
+
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
-
 
 // -- our packages -- //
 
 // page routes
 import 'package:md_final/HomePage/home_page.dart';
+import 'package:md_final/global_widgets/user_preferences.dart';
 import 'package:md_final/nutrition_page/nutrition_page.dart';
 import 'package:md_final/profile_page/profile_page.dart';
 import 'package:md_final/social_page/social_page.dart';
@@ -29,8 +30,13 @@ void main() {
       '/workout': (context) => const WorkoutPage(),
       '/social': (context) => const SocialPage(),
     },
+    theme: UserPreferences.getThemeData(),
+    // darkTheme: _defaultTheme(true),
+    // darkTheme: _darkTheme(),
+    home: HomeNavigator(),
   ));
 }
+
 
 class HomeNavigator extends StatefulWidget {
   const HomeNavigator({super.key});
