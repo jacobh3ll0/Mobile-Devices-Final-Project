@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'profile_creation_page.dart';
 
 class SignUpPage extends StatelessWidget //Handles first level of user sign up (Email and Password) using FireBase. Will have another page for further details.
 {
@@ -8,30 +9,33 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+
   Future<void> _signUp(BuildContext context) async //Function to handle a signup attempt
   {
     try //Try inputted information
     {
 
-      //Create the user credential
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text.trim(), password: _passwordController.text.trim());
+      //Create the user account, and get the usercredential
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text.trim().toLowerCase(), password: _passwordController.text.trim().toLowerCase());
 
-      //When account is succesfully created, display this snack bar on login screen
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Account creation successful!"),
-          backgroundColor: Colors.green,
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileCreationPage(uid: userCredential.user!.uid), //Navigate to the profile creation with the usercredential
         ),
       );
-      Navigator.pop(context); //Return to login
+
     }
-    catch (e) //If signup fails, output error to snackbar
+    catch (e) //If signup fails, output error to snackbar (This should only happen in error, my input validation should catch any errors)
     {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Sign-Up failed: $e'), //Errorr message
+          content: Text('Whoops, that should not have happened! Account Creation Failed: $e'), //Error message
           backgroundColor: Colors.red, //Set color red
         ),
       );
+
+      Navigator.pop(context); //Return to the login page (Account creation failed)
     }
   }
 
@@ -41,74 +45,128 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
     return Scaffold(
       appBar: AppBar(title: Text('Sign Up')),
       body: Padding(
-        padding: const EdgeInsets.only(top: 32.0), //Pad the top for athletics
+        padding: const EdgeInsets.only(top: 32.0), //Pad the top for aesthetics
         child: Align(
           alignment: Alignment.topCenter, //Set alignment
-            child: Padding(
-              padding: const EdgeInsets.all(16.0), //Pad for aesthetics
-              child: Column(
-                children: [
-
-                  //First email box definition
-                  TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0), //Pad for aesthetics
+            child: Column(
+              children: [
+                //First email box definition
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey, //color of non-focus border
+                        width: 1.0, //boarder thickness
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue, //color when focused
+                        width: 2.0, //thickness when focused
+                      ),
                     ),
                   ),
+                ),
 
-                  SizedBox(height: 30), //For aesthetics
+                SizedBox(height: 30), //For aesthetics
 
-                  //Confirm email definition
-                  TextField(
-                    controller: _confirmEmailController,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm Email',
-                      border: OutlineInputBorder(),
+                //Confirm email definition
+                TextField(
+                  controller: _confirmEmailController,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Email',
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                        width: 1.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 2.0,
+                      ),
                     ),
                   ),
+                ),
 
-                  SizedBox(height: 30), //For aesthetics
+                SizedBox(height: 30), //For aesthetics
 
-                  //Password field definition
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
+                //Password field definition
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                        width: 1.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 2.0,
+                      ),
                     ),
                   ),
+                ),
 
-                  SizedBox(height: 30), //For aesthetics
+                SizedBox(height: 30), //For aesthetics
 
-                  //Confirm password field definition
-                  TextField(
-                    controller: _confirmPasswordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm Password',
-                      border: OutlineInputBorder(),
+                //Confirm password field definition
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Password',
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                        width: 1.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 2.0,
+                      ),
                     ),
                   ),
+                ),
 
-                  SizedBox(height: 50), //For aesthetics
+                SizedBox(height: 50), //For aesthetics
 
-                  //Create account button
-                  ElevatedButton(
-                    onPressed: ()
+                //Button at the bottom to proceed to profile creation
+                ElevatedButton(
+                  onPressed: () async
+                  {
+                    //Validate the user input
+
+                    //Make sure not empty
+                    if (_emailController.text.isNotEmpty && _confirmEmailController.text.isNotEmpty && _passwordController.text.isNotEmpty && _confirmPasswordController.text.isNotEmpty)
                     {
-                      if (_emailController.text.trim() != _confirmEmailController.text.trim()) //If both emails dont match
+                      //Make sure the emails are not different
+                      if (_emailController.text.trim().toLowerCase() != _confirmEmailController.text.trim().toLowerCase())
                       {
-                        ScaffoldMessenger.of(context).showSnackBar( //Output error to snackbar
+                        ScaffoldMessenger.of(context).showSnackBar( //Output error
                           SnackBar(
                             content: Text('Your emails MUST match'),
                             backgroundColor: Colors.red,
                           ),
                         );
                       }
-                      else if (_passwordController.text != _confirmPasswordController.text) //If both password fields dont match
+                      //Make sure the passwords are not different
+                      else if (_passwordController.text != _confirmPasswordController.text)
                       {
                         ScaffoldMessenger.of(context).showSnackBar( //Output error
                           SnackBar(
@@ -117,18 +175,57 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                           ),
                         );
                       }
-                      else //Otherwise send to firebase for signup (Still must meet firebase requirements @ .com and > 6 characters)
+                      else //If email and password are matches
                       {
-                        _signUp(context);
+                        //Verify the email is in proper format
+                        if(!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(_emailController.text))
+                          {
+                            ScaffoldMessenger.of(context).showSnackBar( //Output error if not
+                              // Output error
+                              SnackBar(
+                                content: Text('Not a valid email!'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        //Make sure passwords are not out of range
+                        else if(_passwordController.text.length < 6 && _passwordController.text.length > 30)
+                          {
+                            ScaffoldMessenger.of(context).showSnackBar( //Output error message
+                              // Output error
+                              SnackBar(
+                                content: Text('Password MUST be between 6 to 30 characters'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        else
+                          {
+                            //Wait for the signup to complete -> Requires profile completion and preferences filled out before being done
+                            await _signUp(context);
+
+                            Navigator.pop(context); //Return to login after full account is made
+                          }
                       }
-                    },
-                    child: Text('Create Account'),
-                  ),
-                ],
-              ),
+                    }
+                    else //If the all fields are not filled
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        // Output error
+                        SnackBar(
+                          content: Text('ALL FIELDS ARE REQUIRED!'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: Text('Proceed to profile creation!'),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

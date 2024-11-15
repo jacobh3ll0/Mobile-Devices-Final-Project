@@ -62,18 +62,50 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
                   //Email field definition
                   TextField(
                     controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.grey, // Color of the border when not focused
+                          width: 1.0,         // Thickness of the border
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blue, // Color of the border when focused
+                          width: 2.0,         // Thickness of the border when focused
+                        ),
+                      ),
                     ),
-                    keyboardType: TextInputType.emailAddress,
                   ),
+
+
 
                   SizedBox(height: 25), //For Ascetics
 
                   //Define the button
                   ElevatedButton(
-                    onPressed: () => _resetPassword(context), //Trigger resetPassword function with context for this page (For error)
+                    onPressed: ()
+                    {
+                      //Verify the input is an acceptable email input, and is non empty
+                      if(_emailController.text.isNotEmpty && RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(_emailController.text))
+                        {
+                          _resetPassword(context); //Trigger resetPassword function with context for this page (For error)
+                        }
+                      else //Otherwise output error in snack bar
+                      {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                          SnackBar(
+                            content: Text('You must input an email!'), //Output error
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+
+                    },
                     child: Text('Reset Password'),
                   ),
                 ],
