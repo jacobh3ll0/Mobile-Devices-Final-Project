@@ -73,10 +73,10 @@ class HomePageState extends State<HomePage>
     String UserEmail = user != null ? '${user.email}' : 'User not found :('; //Set either user Email, or null (if error)
 
     return Scaffold(
-        appBar: AppBar(title: Text("Home Page"), automaticallyImplyLeading: false),
+        appBar: AppBar(title: const Text("Home Page"), automaticallyImplyLeading: false),
         body:
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             // image: DecorationImage(
             //     image: AssetImage("testimage.PNG"),
             //     fit: BoxFit.cover),

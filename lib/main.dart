@@ -126,7 +126,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
 
   //list of pages
   late final List<Widget> _pages = [
-    const HomePage(),
+    HomePage(),
     const NutritionPage(),
     const WorkoutPage(),
     const SocialPage(),
