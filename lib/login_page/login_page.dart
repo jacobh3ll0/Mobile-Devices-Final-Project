@@ -16,7 +16,7 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
     try
     {
       //Attempt to sign on given inputted user email and password
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.toLowerCase(), password: password);
       String? token = await userCredential.user!.getIdToken(); //Retrieve the ID token for the user
       loginUser(token!); //Pass the token back to AppLaunch to login the user
     }
@@ -66,7 +66,18 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      border: OutlineInputBorder(),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.grey, // Color of the underline when not focused
+                          width: 1.0,         // Thickness of the underline
+                        ),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.purple, // Color of the underline when focused
+                          width: 2.0,         // Thickness of the underline when focused
+                        ),
+                      ),
                     ),
                   ),
 
@@ -75,12 +86,24 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
                  //Handles password field
                   TextField(
                     controller: _passwordController,
-                    obscureText: true, //Obscure the password text
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      border: OutlineInputBorder(),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.grey, // Color of the underline when not focused
+                          width: 1.0,         // Thickness of the underline
+                        ),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.purple, // Color of the underline when focused
+                          width: 2.0,         // Thickness of the underline when focused
+                        ),
+                      ),
                     ),
                   ),
+
+
                   SizedBox(height: 35),
 
                   //Defines the login button
@@ -88,7 +111,23 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
                     width: 200,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () => _login(context, _emailController.text, _passwordController.text), //Attempt login with given details
+                      onPressed: ()
+                      {
+                        if(_emailController.text != "" || _passwordController.text != "")
+                        {
+                          _login(context, _emailController.text, _passwordController.text);
+                        }
+                        else
+                          {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar( //Output error
+                              SnackBar(
+                                content: Text('You must input and email and a password!'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                      }, //Attempt login with given details
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.purple, //Set background colour
                         foregroundColor: Colors.white, //Set text colour

@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context)
   {
     User? user = FirebaseAuth.instance.currentUser; //Gets the current user information from the FireBase (Could be null in case of error)
-    String UserEmail = user != null ? '${user.email}' : 'User not found :('; //Set either user Email, or null (if error)
+    String UserEmail = user != null ? '${user.email}' : 'User not found'; //Set either user Email, or null (if error)
 
     return Scaffold(
       appBar: AppBar(title: Text("Home Page"), automaticallyImplyLeading: false),
