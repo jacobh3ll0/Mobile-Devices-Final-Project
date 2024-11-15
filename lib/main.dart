@@ -1,9 +1,15 @@
+// -- Flutter/dart packages -- //
+
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-
 // -- our packages -- //
+import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
+import 'package:md_final/global_widgets/theme_related/theme_manager.dart';
+import 'global_widgets/database_model.dart';
+import 'global_widgets/database_model_user_prefs.dart';
 
 //Authentication Handlers
 import 'session_manager.dart';
@@ -15,9 +21,6 @@ import 'package:md_final/nutrition_page/nutrition_page.dart';
 import 'package:md_final/profile_page/profile_page.dart';
 import 'package:md_final/social_page/social_page.dart';
 import 'package:md_final/workout_page/workout_page.dart';
-
-// helper functions
-import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
 
 // -----------------  //
 
@@ -31,8 +34,21 @@ void main() async
 class FitnessApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //init database, this will stay open, you can access it by creating a variable like below
+    //basically if it is already open DatabaseModel() will return an instance of it
+    DatabaseModel userPrefs = DatabaseModel();
+
     return MaterialApp(
       title: 'Fitness App', //Temp name, to be changed later
+      initialRoute: '/home',
+      routes: {
+        '/home': (context) => const HomeNavigator(),
+        '/nutrition': (context) => const NutritionPage(),
+        '/profile': (context) => const ProfilePage(),
+        '/workout': (context) => const WorkoutPage(),
+        '/social': (context) => const SocialPage(),
+      },
+      theme: ThemeManager.getThemeData(),
       home: AppLaunch(), //Launch the app
     );
   }

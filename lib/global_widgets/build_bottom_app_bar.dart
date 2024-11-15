@@ -52,9 +52,10 @@ class _BuildBottomNavigationBarState extends State<BuildBottomNavigationBar> {
       onTap: (index) {
         _onIconPress(index);
       },
-      selectedItemColor: Colors.blue,
+      selectedItemColor: Theme.of(context).primaryColor,
       showSelectedLabels: true,
       unselectedItemColor: Colors.black,
+
       items: [
       BottomNavigationBarItem(icon: Icon(iconList[0]), label: "Home"),
       BottomNavigationBarItem(icon: Icon(iconList[1]), label: "Nutrition"),
