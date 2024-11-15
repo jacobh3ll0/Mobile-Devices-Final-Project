@@ -40,14 +40,6 @@ class FitnessApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Fitness App', //Temp name, to be changed later
-      initialRoute: '/home',
-      routes: {
-        '/home': (context) => const HomeNavigator(),
-        '/nutrition': (context) => const NutritionPage(),
-        '/profile': (context) => const ProfilePage(),
-        '/workout': (context) => const WorkoutPage(),
-        '/social': (context) => const SocialPage(),
-      },
       theme: ThemeManager.getThemeData(),
       home: AppLaunch(), //Launch the app
     );
