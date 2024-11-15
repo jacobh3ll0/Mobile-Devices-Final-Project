@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'dart:developer';
-import 'package:flutter/material.dart';
+import 'package:md_final/global_widgets/user_options.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -7,61 +8,83 @@ class DatabaseModel {
   static final DatabaseModel _instance = DatabaseModel._internal();
   final String _tableName = "userPrefs";
   final String _loggerName = "DataModel";
-  late Database _database;
+  late final Future<Database> _databaseFuture;
 
-  DatabaseModel._internal();
-
-  static ThemeData theme = ThemeData(
-    useMaterial3: true,
-
-    // colour information for main theme
-    colorScheme: ColorScheme.fromSwatch(
-      primarySwatch: Colors.purple,
-      accentColor: Colors.blue,
-      backgroundColor: Colors.grey,
-      brightness: Brightness.light,
-    ),
-
-    canvasColor: Colors.grey, // controls colour of navigation bar
-  );
-
-  // theme functions
-
-  static getThemeData() {
-    return theme;
+  DatabaseModel._internal() {
+    _databaseFuture = _initDatabase();
   }
 
-
-  // Factory constructor
   factory DatabaseModel() {
     return _instance;
   }
 
-  // Getter for database to ensure it is initialized before use
-  Future<Database> get database async {
-    if (_database == null || !_database.isOpen) {
-      await _initDatabase();
-    }
-    return _database;
-  }
+  //getter
+  Future<Database> get database => _databaseFuture;
 
-  Future<void> _initDatabase() async {
-    // Getting the path to store the database file
+  // Initialize the database
+  Future<Database> _initDatabase() async {
     var dbPath = await getDatabasesPath();
-    String path = join(dbPath, '$_tableName.db'); // Joining the path with the database name
+    String path = join(dbPath, '$_tableName.db');
 
-    _database = await openDatabase(
+    // Opening db
+    final db = await openDatabase(
       path,
       version: 1,
       onCreate: (db, version) async {
-        await db.execute("CREATE TABLE $_tableName(id INTEGER PRIMARY KEY, option TEXT, value TEXT)");
+        await db.execute(
+          "CREATE TABLE $_tableName(id INTEGER PRIMARY KEY, option TEXT, value TEXT)",
+        );
       },
     );
-    log("database initialized", name: _loggerName);
+    log("Database initialized", name: _loggerName);
+    return db;
   }
 
-  // Example of a database method
-  Future<void> insertPreference(String option, String value) async {
+  Future<List<UserOptions>> getUserOptionsAsLists() async {
+
+    // ensure database is initialized
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(_tableName);
+
+    List<UserOptions> optionsList = [];
+    for (int i = 0; i < maps.length; i++) {
+      optionsList.add(UserOptions.fromMap(maps[i]));
+    }
+
+    for (int i = 0; i < maps.length; i++) {
+      log(optionsList[i].toString(), name: _loggerName);
+    }
+
+    return optionsList;
+  }
+
+  Future<Map<String, String>> getUserOptionsAsMaps() async {
+
+    // ensure database is initialized
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query(_tableName);
+
+    Map<String, String> optionsMaps = {};
+    for (int i = 0; i < maps.length; i++) {
+      // optionsMaps.add(UserOptions.fromMap(maps[i]));
+      UserOptions temp = UserOptions.fromMap(maps[i]);
+      if(!optionsMaps.containsKey(temp.option)) {
+        optionsMaps[temp.option] = temp.value;
+      } else {
+        log("Duplicate entry for user options exists in database, ignoring: [$temp]", name: _loggerName);
+      }
+    }
+
+    for (int i = 0; i < maps.length; i++) {
+      log(maps.toString(), name: _loggerName);
+    }
+
+    return optionsMaps;
+  }
+
+  Future<void> insertUserOption(String option, String value) async {
     final db = await database; // Ensures database is initialized
     await db.insert(
       _tableName,
@@ -71,4 +94,27 @@ class DatabaseModel {
     log("Preference inserted: $option = $value", name: _loggerName);
   }
 
+  Future<void> editUserOption(String option, String value) async {
+
+    UserOptions userOpts = UserOptions(option: option, value: value);
+
+    final db = await database; // Ensures database is initialized
+    await db.update(
+      _tableName,  // Table name
+      userOpts.toMap(),  //convert to map
+      where: "id = ?",
+      whereArgs: [userOpts.id],  // Argument for WHERE clause
+    );
+    log("updated: $option = $value", name: _loggerName);
+  }
+
+  Future<void> deleteUserOption(int id) async {
+    final db = await database; // Ensures database is initialized
+    await db.delete(
+      _tableName, // Table name
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    log("deleted, id: $id", name: _loggerName);
+  }
 }

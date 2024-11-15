@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 // -- our packages -- //
 import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
+import 'package:md_final/global_widgets/theme_related/theme_manager.dart';
 import 'global_widgets/database_model.dart';
 import 'global_widgets/database_model_user_prefs.dart';
 
@@ -22,8 +23,9 @@ import 'package:md_final/workout_page/workout_page.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized(); //do not remove
 
+  //init database, this will stay open, you can access it by creating a variable like below
+  //basically if it is already open DatabaseModel() will return an instance of it
   DatabaseModel userPrefs = DatabaseModel();
-  userPrefs.insertPreference('test5', 'wow');
 
   runApp(MaterialApp(
     initialRoute: '/home',
@@ -34,7 +36,7 @@ void main() {
       '/workout': (context) => const WorkoutPage(),
       '/social': (context) => const SocialPage(),
     },
-    theme: DatabaseModel.getThemeData(),
+    theme: ThemeManager.getThemeData(),
     // darkTheme: _defaultTheme(true),
     // darkTheme: _darkTheme(),
     home: HomeNavigator(),
