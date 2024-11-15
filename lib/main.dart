@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 // -- our packages -- //
 import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
-import 'global_widgets/user_prefs_database_model.dart';
+import 'global_widgets/database_model.dart';
+import 'global_widgets/database_model_user_prefs.dart';
 
 // page routes
 import 'package:md_final/HomePage/home_page.dart';
@@ -22,6 +23,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized(); //do not remove
 
   DatabaseModel userPrefs = DatabaseModel();
+  userPrefs.insertPreference('test5', 'wow');
 
   runApp(MaterialApp(
     initialRoute: '/home',
