@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
@@ -42,36 +43,9 @@ TextStyle timeStyle() {
   );
 }
 
-String calcTOD(int time)
-{
-  if (time >= 500 && time < 1159)
-    {
-      return "Good Morning User! $time";
-    }
-  else if (time >= 1200 && time < 1559)
-    {
-      return "Good Afternoon User! $time";
-    }
-  else if (time >= 1600 && time < 1959)
-    {
-      return "Good Evening User! $time";
-    }
-  else
-    {
-      return "Good Night User! $time";
-    }
 
-}
 
-String getTime()
-{
-  final dt = DateTime.now();
-  final dt24 = DateFormat('HH:mm').format(dt);
-  final hour = dt.hour.toString().padLeft(2,'0');
-  final min = dt.minute.toString().padLeft(2,'0');
-  final inttime = int.parse('$hour$min');
-  return calcTOD(inttime);
-}
+
 
 Future<Map<String, dynamic>> getQuote() async
 {
@@ -91,12 +65,75 @@ class HomePage extends StatefulWidget
 }
 class HomePageState extends State<HomePage>
 {
+  Map<String, dynamic>? userData; //Map to store the fetched user data from DB
+  String currentUser = "";
 
   @override
   void initState()
   {
     super.initState();
+    fetchUserData(); //Gets the users name, really inefficient, however funcitonal for now
+  }
 
+  Future<void> fetchUserData() async //Function to handle retrieving the user data
+      {
+    try
+    {
+      User? user = FirebaseAuth.instance.currentUser; //Get the current user
+
+      if (user != null) //Make sure they are not null
+          {
+        String uid = user.uid; //Store their id
+
+        //fetch the user data from the database using their id
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+        if (userDoc.exists) //If a user document exists
+            {
+          setState(()
+          {
+            userData = userDoc.data() as Map<String, dynamic>; //put the data into a map
+            currentUser = userData?['displayName'] ?? "Unknown User";
+          });
+        }
+      }
+    }
+    catch (e) //If it fails to grab the users data, output debug.
+        {
+      print("FAILED TO GRAB THE USERS DATA: $e");
+    }
+  }
+
+
+  String calcTOD(int time)
+  {
+    if (time >= 500 && time < 1159)
+    {
+      return "Good Morning $currentUser! $time";
+    }
+    else if (time >= 1200 && time < 1559)
+    {
+      return "Good Afternoon $currentUser! $time";
+    }
+    else if (time >= 1600 && time < 1959)
+    {
+      return "Good Evening $currentUser! $time";
+    }
+    else
+    {
+      return "Good Night $currentUser! $time";
+    }
+
+  }
+
+  String getTime()
+  {
+    final dt = DateTime.now();
+    final dt24 = DateFormat('HH:mm').format(dt);
+    final hour = dt.hour.toString().padLeft(2,'0');
+    final min = dt.minute.toString().padLeft(2,'0');
+    final inttime = int.parse('$hour$min');
+    return calcTOD(inttime);
   }
 
   // const HomePage({super.key});

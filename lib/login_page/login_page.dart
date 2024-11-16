@@ -86,6 +86,7 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
                  //Handles password field
                   TextField(
                     controller: _passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       enabledBorder: UnderlineInputBorder(
@@ -113,7 +114,7 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
                     child: ElevatedButton(
                       onPressed: ()
                       {
-                        if(_emailController.text != "" || _passwordController.text != "")
+                        if(_emailController.text != "" && _passwordController.text != "")
                         {
                           _login(context, _emailController.text, _passwordController.text);
                         }
