@@ -16,7 +16,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
   Widget build(BuildContext context) {
 
     FirestoreManager manager = FirestoreManager();
-    // manager.storeUserData(WorkoutDataModel(workoutName: "bench press", muscleGroup: "chest", weight: 15, reps: 5).toMap());
 
     return Scaffold(
       body: FutureBuilder<List<List<WorkoutDataModel>>>(
@@ -26,6 +25,18 @@ class _WorkoutPageState extends State<WorkoutPage> {
             return const CircularProgressIndicator(); // Show loading indicator while fetching data
           }
           //display workout data
+          if(snapshot.data == null || snapshot.data!.isEmpty) {
+            return  Scaffold(
+                appBar: AppBar(title: const Text("Workout")),
+                body: const Center(
+                  child: Text(
+                  'No workouts found. Start by adding one using the "+" button!',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                  ),
+                ),
+            );
+          }
           return Scaffold(
             appBar: AppBar(title: const Text("Workout")),
             // body: Container(color: Colors.blue,),

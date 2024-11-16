@@ -39,11 +39,30 @@ class FitnessApp extends StatelessWidget {
     //basically if it is already open DatabaseModel() will return an instance of it
     DatabaseModel();
 
-    return MaterialApp(
-      title: 'Fitness App', //Temp name, to be changed later
-      theme: ThemeManager.getThemeData(),
-      home: _AppLaunch(), //Launch the app
+    //ensure user options are in database
+    ThemeManager.initUserOptions();
+
+    return FutureBuilder<ThemeData>(
+      future: ThemeManager.getThemeData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return MaterialApp(
+            title: 'Fitness App',
+            theme: ThemeManager.getLightTheme(), // light theme fallback
+            home: _AppLaunch(),
+          );
+        }
+
+        return MaterialApp(
+          title: 'Fitness App',
+          theme: snapshot.data, // Use the fetched theme
+          home: _AppLaunch(),
+        );
+      },
     );
+
   }
 }
 
@@ -126,7 +145,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
 
   //list of pages
   late final List<Widget> _pages = [
-    HomePage(),
+    const HomePage(),
     NutritionPage(),
     const WorkoutPage(),
     const SocialPage(),

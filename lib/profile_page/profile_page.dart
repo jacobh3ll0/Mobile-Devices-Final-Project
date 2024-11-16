@@ -3,16 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
 
+import 'NavigateToSettingsPage.dart';
+
 class ProfilePage extends StatefulWidget
 {
   final VoidCallback logoutCallback;
-  ProfilePage({required this.logoutCallback});
+  const ProfilePage({super.key, required this.logoutCallback});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  ProfilePageState createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage>
+class ProfilePageState extends State<ProfilePage>
 {
   Map<String, dynamic>? userData; //Map to store the fetched user data from DB
 
@@ -56,129 +58,145 @@ class _ProfilePageState extends State<ProfilePage>
   {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile Page"),
+        title: const Text("Profile Page"),
         automaticallyImplyLeading: false, //Doesnt show back button
       ),
 
       //Body definition
 
       //If the userData does not exist, show that no user data is found as a text title
-      body: userData == null ? Padding(
-        padding: const EdgeInsets.all(20.0),
+      body: userData == null ? const Padding(
+        padding: EdgeInsets.all(20.0),
         child: Center(child: Text("No user data found.")),
       )
       //Otherwise, output all of the users information on the profile page
-          : Padding(
+      : Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
 
 
-            //Circle avatar (Profile Picture) definition
-            Center(
-              child: CircleAvatar(
+              //Circle avatar (Profile Picture) definition
+              Center(
+                child: CircleAvatar(
                 radius: 50,
-                //Check for background picture as null value. and if so, just display the person icon in the circle avatar
-                backgroundImage: userData!['profileImageURL'] != null &&
-                    userData!['profileImageURL'].toString().isNotEmpty
-                    ? NetworkImage(userData!['profileImageURL'])
-                    : null,
-                child: userData!['profileImageURL'] == null ||
+                  //Check for background picture as null value. and if so, just display the person icon in the circle avatar
+                  backgroundImage: userData!['profileImageURL'] != null &&
+                      userData!['profileImageURL'].toString().isNotEmpty
+                      ? NetworkImage(userData!['profileImageURL'])
+                      : null,
+                  child: userData!['profileImageURL'] == null ||
                     userData!['profileImageURL'].toString().isEmpty
-                    ? Icon(
-                  Icons.person,
-                  size: 50,
-                  color: Colors.grey, //Change background color of default profile picture for aesthetics
-                )
-                    : null,
+                    ? const Icon(
+                    Icons.person,
+                    size: 50,
+                    color: Colors.grey, //Change background color of default profile picture for aesthetics
+                  ) : null,
+                ),
               ),
-            ),
 
-            SizedBox(height: 20), //Spacing for aesthetics
+              const SizedBox(height: 20), //Spacing for aesthetics
 
-            //DisplayName format definition
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Display Name:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              //DisplayName format definition
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Display Name:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "${userData!['displayName'] ?? 'N/A'}",
-                style: TextStyle(fontSize: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "${userData!['displayName'] ?? 'N/A'}",
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-            ),
 
-            SizedBox(height: 15),//Spacing for aesthetics
+              const SizedBox(height: 15),//Spacing for aesthetics
 
-            //Description format definition
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Description:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              //Description format definition
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Description:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "${userData!['description'] ?? 'N/A'}",
-                style: TextStyle(fontSize: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "${userData!['description'] ?? 'N/A'}",
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-            ),
 
-            SizedBox(height: 15), //Spacing for aesthetics
+              const SizedBox(height: 15), //Spacing for aesthetics
 
-            //Gender format definition
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Gender:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              //Gender format definition
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Gender:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "${userData!['gender'] ?? 'N/A'}",
-                style: TextStyle(fontSize: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "${userData!['gender'] ?? 'N/A'}",
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-            ),
 
-            SizedBox(height: 15), //Spacing for aesthetics
+              const SizedBox(height: 15), //Spacing for aesthetics
 
-            //Gym experience format definition
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Gym Experience:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              //Gym experience format definition
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Gym Experience:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "${userData!['gymExperience'] ?? 'N/A'}",
-                style: TextStyle(fontSize: 16),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "${userData!['gymExperience'] ?? 'N/A'}",
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-            ),
 
-            SizedBox(height: 30), //Spacing for aesthetics
+              const SizedBox(height: 30), //Spacing for aesthetics
 
-            //Logout button definition
-            Center(
-              child: ElevatedButton(
-                onPressed: widget.logoutCallback, // Logout callback
-                child: Text('Logout'),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {_buildSettingsPage();}, // Logout callback
+                  child: const Text('Settings'),
+                ),
               ),
-            ),
-          ],
-        ),
+
+              //Logout button definition
+              Center(
+                child: ElevatedButton(
+                  onPressed: widget.logoutCallback, // Logout callback
+                  child: const Text('Logout'),
+                ),
+              ),
+
+            ],
+          ),
       ),
+    );
+  }
+
+  _buildSettingsPage() async {
+    final result = await Navigator.push( //returns a Grade object
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SettingsPage(),
+        )
     );
   }
 }
