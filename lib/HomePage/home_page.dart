@@ -15,7 +15,7 @@ import 'package:gif/gif.dart';
 
 TextStyle test()
 {
-  return TextStyle(
+  return const TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.bold,
     color: Colors.yellow, // Text color
@@ -29,7 +29,7 @@ TextStyle test()
   );
 }
 TextStyle quoteStyle() {
-  return TextStyle(
+  return const TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.bold,
     color: Colors.orangeAccent,
@@ -44,7 +44,7 @@ TextStyle quoteStyle() {
 }
 
 TextStyle timeStyle() {
-  return TextStyle(
+  return const TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.bold,
     color: Colors.red,
@@ -75,6 +75,8 @@ Future<Map<String, dynamic>> getQuote() async
 
 class HomePage extends StatefulWidget
 {
+  const HomePage({super.key});
+
   @override
   HomePageState createState() => HomePageState();
 }
@@ -189,7 +191,7 @@ class HomePageState extends State<HomePage>
       future: getQuote(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
@@ -202,7 +204,7 @@ class HomePageState extends State<HomePage>
         }
         else
         {
-          return Text('No data available');
+          return const Text('No data available');
         }
       },
     );

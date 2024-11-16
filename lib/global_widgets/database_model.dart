@@ -96,9 +96,27 @@ class DatabaseModel {
 
   Future<void> editUserOption(String option, String value) async {
 
-    UserOptions userOpts = UserOptions(option: option, value: value);
-
     final db = await database; // Ensures database is initialized
+
+    // Fetch the current record to get the ID
+    final List<Map<String, dynamic>> records = await db.query(
+      _tableName,
+      where: "option = ?",
+      whereArgs: [option],
+      limit: 1, // limit to one record
+    );
+
+    if (records.isEmpty) {
+      log("Option $option does not exist in the database.", name: _loggerName);
+      return;
+    }
+
+    // get ID from table
+    final int id = records.first['id'];
+
+    // Create the updated UserOptions object
+    UserOptions userOpts = UserOptions(option: option, value: value, id: id);
+
     await db.update(
       _tableName,  // Table name
       userOpts.toMap(),  //convert to map
