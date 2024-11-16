@@ -1,15 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../forgot_password_page/forgot_password_page.dart';
 import '../signup_page/signup_page.dart';
 
-class LoginPage extends StatelessWidget //Handles user authentication (login) using FireBase - W/ Redirects for forgot password and signup
-{
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
+class LoginPage extends StatefulWidget //Handles user authentication (login) using FireBase - W/ Redirects for forgot password and signup
+    {
   final Function(String) loginUser; //Get function to handle successful login during app launch
   LoginPage({required this.loginUser});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+
+}
+
+  class _LoginPageState extends State<LoginPage> {
+    final _emailController = TextEditingController();
+    final _passwordController = TextEditingController();
+
+
+  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  // Method to send notifications
+  Future<void> _sendNotification(String title, String body) async {
+    // Notification details for Android platform
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'auth_channel', 'Authentication Notifications',
+      channelDescription: 'Notifications for authentication actions',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    // Show the notification
+    await _notificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+    );
+  }
+
+  void _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+
+    await _notificationsPlugin.initialize(initializationSettings);
+  }
 
   Future<void> _login(BuildContext context, String email, String password) async //Handles login attempt
   {
@@ -18,7 +58,9 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
       //Attempt to sign on given inputted user email and password
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.toLowerCase(), password: password);
       String? token = await userCredential.user!.getIdToken(); //Retrieve the ID token for the user
-      loginUser(token!); //Pass the token back to AppLaunch to login the user
+      widget.loginUser(token!); //Pass the token back to AppLaunch to login the user
+
+      _sendNotification("Login Successful", "Welcome back, $email!");
     }
     catch (e) //If the database fails to find the users information, output the error in snackbar
     {
@@ -30,6 +72,13 @@ class LoginPage extends StatelessWidget //Handles user authentication (login) us
       );
     }
   }
+
+  @override
+  void initState(){
+    super.initState();
+    _initializeNotifications();
+  }
+
   @override
   Widget build(BuildContext context) //Defines the login page
   {
