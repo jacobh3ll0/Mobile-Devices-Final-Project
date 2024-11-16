@@ -5,10 +5,19 @@ class SocialPage extends StatelessWidget {
   const SocialPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     return Scaffold(
-      appBar: AppBar(title: Text("Social Page"), automaticallyImplyLeading: false,),
+      appBar: AppBar(
+        title: const Text("Social Page"),
+        automaticallyImplyLeading: false,
+      ),
+      body: const Center(
+        child: Text(
+          "Social page to be completed",
+          style: TextStyle(fontSize: 14),
+        ),
+      ),
     );
   }
-
 }
