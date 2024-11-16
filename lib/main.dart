@@ -127,7 +127,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
   //list of pages
   late final List<Widget> _pages = [
     HomePage(),
-    const NutritionPage(),
+    NutritionPage(),
     const WorkoutPage(),
     const SocialPage(),
     ProfilePage(logoutCallback: widget.logoutUser), //Passes logout functionality to profile
