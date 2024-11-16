@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../forgot_password_page/forgot_password_page.dart';
 import '../signup_page/signup_page.dart';
+import 'package:permission_handler/permission_handler.dart';  // Import to request permissions (Android 13+)
+import 'dart:io' show Platform;
 
 class LoginPage extends StatefulWidget //Handles user authentication (login) using FireBase - W/ Redirects for forgot password and signup
     {
@@ -74,10 +76,32 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    // Request notification permission if running on Android 13+
+    if (Platform.isAndroid) {
+      _requestNotificationPermission();
+    }
     _initializeNotifications();
   }
+
+    // Method to request notification permission on Android 13 and above
+    Future<void> _requestNotificationPermission() async {
+      if (Platform.isAndroid) {
+        // Check if notification permission is denied
+        if (await Permission.notification.isDenied) {
+          // Request notification permission from the user
+          PermissionStatus status = await Permission.notification.request();
+          if (status.isDenied) {
+            print("Notification permission denied"); // Log if permission is denied
+          } else if (status.isGranted) {
+            print("Notification permission granted"); // Log if permission is granted
+          }
+        }
+      }
+    }
+
+
 
   @override
   Widget build(BuildContext context) //Defines the login page

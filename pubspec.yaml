@@ -46,7 +46,7 @@ dependencies:
   http: ^1.2.2
   gif: ^2.3.0
   flutter_animate: ^2.0.0
-
+  permission_handler:
 
 dev_dependencies:
   flutter_test:
