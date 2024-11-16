@@ -13,11 +13,26 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:gif/gif.dart';
 
-TextStyle quoteStyle() {
+TextStyle test()
+{
   return TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.bold,
-    color: Colors.red,
+    color: Colors.yellow, // Text color
+      shadows: [
+        Shadow(
+          blurRadius: 10.0,
+          color: Colors.deepOrange,
+          offset: Offset(2.0, 2.0),
+        ),
+      ],
+  );
+}
+TextStyle quoteStyle() {
+  return TextStyle(
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+    color: Colors.orangeAccent,
     shadows: [
       Shadow(
         blurRadius: 10.0,
@@ -155,8 +170,8 @@ class HomePageState extends State<HomePage>
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(''),
-              Text(getTime(), style: timeStyle()),
+              Text(getTime(), style: quoteStyle()),
+                // Text('', style: test(),),
                 buildQuote()
               ],
             ),]
@@ -182,7 +197,7 @@ class HomePageState extends State<HomePage>
           return Text(
             '"${data['q']}" — ${data['a']}',
             textAlign: TextAlign.center,
-            style: quoteStyle(),
+            style: test(),
           );
         }
         else
