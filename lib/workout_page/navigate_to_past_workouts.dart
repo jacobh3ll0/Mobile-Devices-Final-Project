@@ -5,22 +5,52 @@ import 'package:md_final/workout_page/create_new_workout_page.dart';
 import 'package:md_final/workout_page/firestore_manager.dart';
 import 'package:md_final/workout_page/workout_data_model.dart';
 
-class WorkoutPage extends StatefulWidget {
-  const WorkoutPage({super.key});
+class NavigateToPastWorkouts extends StatefulWidget {
+  const NavigateToPastWorkouts({super.key});
 
   @override
-  State<WorkoutPage> createState() => _WorkoutPageState();
+  State<NavigateToPastWorkouts> createState() => _NavigateToPastWorkoutsState();
 }
 
-class _WorkoutPageState extends State<WorkoutPage> {
+class _NavigateToPastWorkoutsState extends State<NavigateToPastWorkouts> {
   @override
   Widget build(BuildContext context) {
 
     FirestoreManager manager = FirestoreManager();
 
     return Scaffold(
-      body: Container(color: Colors.blue, child: const FirebaseFetcher(),),
-      bottomNavigationBar: BuildBottomAppBarWorkoutPage(),
+      body: FutureBuilder<List<List<WorkoutDataModel>>>(
+        future: manager.getUserDataGroupedByDay(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator(); // Show loading indicator while fetching data
+          }
+          //display workout data
+          if(snapshot.data == null || snapshot.data!.isEmpty) {
+            return  Scaffold(
+              appBar: AppBar(title: const Text("Workout")),
+              body: const Center(
+                child: Text(
+                  'No workouts found. Start by adding one using the "+" button!',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          }
+          return Scaffold(
+            appBar: AppBar(title: const Text("Workout")),
+            // body: Container(color: Colors.blue,),
+            body: ListView.builder(
+              itemCount: snapshot.data?.length,
+              itemBuilder: (context, index) {
+                var userWorkout = snapshot.data![index]; // Getting the current person from the list
+                return _buildIndividualWorkout(userWorkout, snapshot, index, context, manager);
+              },
+            ),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push( //returns a Grade object
@@ -42,14 +72,15 @@ class _WorkoutPageState extends State<WorkoutPage> {
   }
 
   Widget _buildIndividualWorkout(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot,
-                                 int index, BuildContext context, FirestoreManager manager) {
+      int index, BuildContext context, FirestoreManager manager) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ExpansionTile(
-        title: Text(userWorkout[0].workoutName),
-        // subtitle: Text('Muscle Group: ${userWorkout.muscleGroup}'),
-        children: _buildExpansionTileChildren(userWorkout, snapshot, index, context, manager)
+          title: Text("${userWorkout[0].time.year}-${userWorkout[0].time.month}-${userWorkout[0].time.day}"),
+          initiallyExpanded: true,
+          // subtitle: Text('Muscle Group: ${userWorkout.muscleGroup}'),
+          children: _buildExpansionTileChildren(userWorkout, snapshot, index, context, manager)
       ),
     );
 
