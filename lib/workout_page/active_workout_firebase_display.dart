@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/adapters/change_notifier_adapter.dart';
 import 'package:md_final/workout_page/firestore_manager.dart';
 import 'package:md_final/workout_page/workout_data_model.dart';
 
 
 class FirebaseFetcher extends StatefulWidget {
-  const FirebaseFetcher({super.key});
+  const FirebaseFetcher({super.key, required this.manager});
+
+  final FirestoreManager manager;
 
   @override
   State<FirebaseFetcher> createState() => _FirebaseFetcherState();
@@ -14,7 +17,7 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
   @override
   Widget build(BuildContext context) {
 
-    FirestoreManager manager = FirestoreManager();
+    FirestoreManager manager = widget.manager;
 
     return FutureBuilder<List<List<WorkoutDataModel>>>(
         future: manager.getUserDataGroupedByWorkoutName(),
@@ -58,6 +61,7 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ExpansionTile(
           title: Text(userWorkout[0].workoutName),
+          enableFeedback: true,
           // subtitle: Text('Muscle Group: ${userWorkout.muscleGroup}'),
           children: _buildExpansionTileChildren(userWorkout, snapshot, index, context, manager)
       ),
@@ -75,6 +79,9 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              //lbs and edit button, reps and edit button, checkbox
+              //TODO
+
               const Text('Details:', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text('Weight: ${workout.weight} lbs'),

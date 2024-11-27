@@ -8,6 +8,9 @@ class WorkoutDataModel {
   late DateTime time;
   late DocumentReference? reference;
 
+  late List<double> weightList;
+  late List<int> repsList;
+
   WorkoutDataModel({
     required this.workoutName,
     required this.muscleGroup,
@@ -16,16 +19,19 @@ class WorkoutDataModel {
     DateTime? time,
   }) : time = time ?? DateTime.now(); // ensure time as a DateTime
 
-  // Converts a Map object to an instance
+  // Converts a Map object to an instance (pull from database)
   WorkoutDataModel.fromMap(Map<String, dynamic> map, {this.reference}) {
     this.workoutName = map['workoutName'];
     this.muscleGroup = map['muscleGroup'];
     this.weight = map['weight'];
     this.reps = map['reps'];
     this.time = DateTime.parse(map['time']);
+
+    this.repsList = [map['reps']];
+    this.weightList = [map['weight']];
   }
 
-  // Converts an instance into a Map object
+  // Converts an instance into a Map object (put into database)
   Map<String, dynamic> toMap() {
     return {
       'workoutName': this.workoutName,

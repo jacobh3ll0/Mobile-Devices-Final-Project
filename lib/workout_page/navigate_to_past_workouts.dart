@@ -98,9 +98,11 @@ class _NavigateToPastWorkoutsState extends State<NavigateToPastWorkouts> {
             children: [
               const Text('Details:', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
+              Text("Name: ${workout.workoutName}"),
               Text('Weight: ${workout.weight} lbs'),
               Text('Reps: ${workout.reps}'),
               Text('Date: ${workout.time.toLocal().toString().split(' ')[0]}'),
+              Text("Date: ${workout.time.toString()}"),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
