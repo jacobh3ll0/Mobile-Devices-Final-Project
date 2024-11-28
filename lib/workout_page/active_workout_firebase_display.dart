@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/adapters/change_notifier_adapter.dart';
+import 'package:md_final/workout_page/clock_widget.dart';
 import 'package:md_final/workout_page/firestore_manager.dart';
 import 'package:md_final/workout_page/workout_data_model.dart';
 
@@ -39,7 +40,13 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
             );
           }
           return Scaffold(
-            appBar: AppBar(title: const Text("Workout")),
+            appBar: AppBar(
+              // title: const Text("Workout"),
+              title: ElevatedButton(onPressed: () {}, child: Text("Start Workout"),), centerTitle: true,
+              actions: const [
+                ClockWidget()
+              ],
+            ),
             // body: Container(color: Colors.blue,),
             body: ListView.builder(
               itemCount: snapshot.data?.length,

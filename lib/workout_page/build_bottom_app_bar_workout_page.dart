@@ -12,7 +12,6 @@ class BuildBottomAppBarWorkoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      // color: Colors.blue,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
