@@ -262,7 +262,7 @@ Future<Map<String, dynamic>> getQuote() async
 Widget buildIconButtonProfile()
 {
   return IconButton(
-    icon: Image.asset('lib/HomePage/profile.png',
+    icon: Image.asset('lib/HomePage/profile.PNG',
     width: 32.0, // Image size
     height: 32.0,
   ),

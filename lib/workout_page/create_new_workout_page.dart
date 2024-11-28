@@ -37,8 +37,8 @@ class _CreateNewWorkoutPageState extends State<CreateNewWorkoutPage> {
       WorkoutDataModel workout = WorkoutDataModel(
           workoutName: _workoutNameController.text,
           muscleGroup: _selectedMuscleGroup!,
-          weight: double.parse(_repsController.text),
-          reps: int.parse(_weightController.text),
+          weight: [double.parse(_weightController.text)],
+          reps: [int.parse(_repsController.text)],
       );
       Navigator.pop(context, workout); // Return the workout object to the previous screen
     }

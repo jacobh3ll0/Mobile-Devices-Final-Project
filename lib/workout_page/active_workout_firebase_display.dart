@@ -23,7 +23,7 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
         future: manager.getUserDataGroupedByWorkoutName(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const CircularProgressIndicator(); // Show loading indicator while fetching data
+            return const Center(child: CircularProgressIndicator()); // Show loading indicator while fetching data
           }
           //display workout data
           if(snapshot.data == null || snapshot.data!.isEmpty) {

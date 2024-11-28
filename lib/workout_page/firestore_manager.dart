@@ -34,8 +34,6 @@ class FirestoreManager {
       DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
       for (var workout in userData.docs) {
-        log("workout: ${workout.data()}");
-
         DateTime workoutTime = DateTime.parse(workout.data()["time"].toString());
         DateTime compareDateTime = DateTime(workoutTime.year, workoutTime.month, workoutTime.day);
         if(compareDateTime == today) {
@@ -45,12 +43,13 @@ class FirestoreManager {
 
 
     } else {
+      log("this ran1");
       userData = await FirebaseFirestore.instance.collection('users').doc(uid).collection('workoutData').get();
-
       for (var workout in userData.docs) {
         maps.add(workout.data());
       }
-
+      log("this ran2");
+      log("maps: $maps");
     }
     for (int i = 0; i < maps.length; i++) {
       userDataList.add(WorkoutDataModel.fromMap(maps[i], reference: userData.docs[i].reference));
@@ -83,7 +82,9 @@ class FirestoreManager {
   }
 
   Future<List<List<WorkoutDataModel>>> getUserDataGroupedByDay() async {
+    log("this ran");
     List<WorkoutDataModel> userDataList = await getUserData(false);
+    log("this ran2");
     //for each entry in user data, group it together
     Map<String, List<WorkoutDataModel>> maps = {};
     for(int i = 0; i < userDataList.length; i++) {

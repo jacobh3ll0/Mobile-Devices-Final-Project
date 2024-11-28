@@ -1,15 +1,14 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WorkoutDataModel {
   late String workoutName;
   late String muscleGroup;
-  late double weight; // in lbs
-  late int reps;
+  late List<double> weight; // in lbs
+  late List<int> reps;
   late DateTime time;
   late DocumentReference? reference;
-
-  late List<double> weightList;
-  late List<int> repsList;
 
   WorkoutDataModel({
     required this.workoutName,
@@ -23,12 +22,19 @@ class WorkoutDataModel {
   WorkoutDataModel.fromMap(Map<String, dynamic> map, {this.reference}) {
     this.workoutName = map['workoutName'];
     this.muscleGroup = map['muscleGroup'];
-    this.weight = map['weight'];
-    this.reps = map['reps'];
-    this.time = DateTime.parse(map['time']);
 
-    this.repsList = [map['reps']];
-    this.weightList = [map['weight']];
+    List<String> weightList = map['weight'].split(',');
+
+    this.weight = weightList.map((weight) {
+      return double.parse(weight);
+    }).toList();
+
+    List<String> repsList = map['reps'].split(',');
+    this.reps = repsList.map((reps) {
+      return int.parse(reps);
+    }).toList();
+
+    this.time = DateTime.parse(map['time']);
   }
 
   // Converts an instance into a Map object (put into database)
@@ -36,10 +42,9 @@ class WorkoutDataModel {
     return {
       'workoutName': this.workoutName,
       'muscleGroup': this.muscleGroup,
-      'weight': this.weight,
-      'reps': this.reps,
+      'weight': this.weight.toString().substring(1, this.weight.toString().length - 1),
+      'reps': this.reps.toString().substring(1, this.reps.toString().length - 1),
       'time': this.time.toString(),
     };
   }
-
 }
