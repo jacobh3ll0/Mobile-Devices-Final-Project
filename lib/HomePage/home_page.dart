@@ -106,12 +106,12 @@ class HomePageState extends State<HomePage>
         DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
         if (userDoc.exists) //If a user document exists
-            {
-          setState(()
           {
-            userData = userDoc.data() as Map<String, dynamic>; //put the data into a map
-            currentUser = userData?['displayName'] ?? "Unknown User";
-          });
+            setState(()
+            {
+              userData = userDoc.data() as Map<String, dynamic>; //put the data into a map
+              currentUser = userData?['displayName'] ?? "Unknown User";
+            });
         }
       }
     }
