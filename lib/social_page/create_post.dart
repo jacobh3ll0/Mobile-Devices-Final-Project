@@ -56,9 +56,11 @@ class CreatePostState extends State<CreatePostPage>
     }
     catch (e) //Handles inability to get user data (shouldnt happen)
     {
-      const SnackBar(
-        content: Text("User data could not be loaded!"),
-        backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("User data could not be loaded!"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -82,9 +84,11 @@ class CreatePostState extends State<CreatePostPage>
     }
     catch (e) //Handles error checking
     {
-      const SnackBar(
-        content: Text("There was an error validating this image!"),
-        backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("There was an error validating the image!"),
+          backgroundColor: Colors.red,
+        ),
       );
       return false; //if error, invalid
     }
@@ -200,9 +204,11 @@ class CreatePostState extends State<CreatePostPage>
                     }
                     catch (e) //Handles the save to database failing
                     {
-                      const SnackBar(
-                        content: Text("Could not create the post!"),
-                        backgroundColor: Colors.red,
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Unable to create the post ... Try again later!"),
+                          backgroundColor: Colors.red,
+                        ),
                       );
                     }
                   }

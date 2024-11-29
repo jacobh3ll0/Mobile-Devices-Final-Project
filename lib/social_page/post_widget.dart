@@ -340,9 +340,11 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
                                   _likesCount += _isLiked ? 1 : -1;
                                 });
 
-                                const SnackBar(
-                                  content: Text("Like update request failed!"),
-                                  backgroundColor: Colors.red,
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Failed to like ... Try again later"),
+                                    backgroundColor: Colors.red,
+                                  ),
                                 );
                               }
                             },

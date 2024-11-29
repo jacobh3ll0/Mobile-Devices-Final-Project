@@ -54,9 +54,11 @@ class ReplyPageState extends State<ReplyPage> {
     }
     catch (e) //Output an error via snackbar
         {
-      const SnackBar(
-        content: Text("Failed to load user"),
-        backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to load user from database!"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -88,16 +90,21 @@ class ReplyPageState extends State<ReplyPage> {
       }
       catch (e) //Give error to user if database save fails
           {
-        const SnackBar(
-          content: Text("Failed to submit comment. Please try again later!"),
-          backgroundColor: Colors.red,
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to connect to database!"),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
-    else {
-      const SnackBar(
-        content: Text("Reply must contain something!"),
-        backgroundColor: Colors.red,
+    else
+    {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Reply must contain something!"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }

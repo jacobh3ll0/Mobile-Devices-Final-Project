@@ -68,9 +68,11 @@ class _SocialState extends State<SocialPage>
     }
     catch (e) //Error if load fails
     {
-      const SnackBar(
-        content: Text("Failed to load social posts!"),
-        backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to load posts!"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -186,12 +188,21 @@ class _SocialState extends State<SocialPage>
                   unsortedPosts = []; //Clears all posts
                 });
                 _loadPostsFromDB(); //Reloads all the posts
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Posts reloaded successfully!"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
               }
               catch (e)
               {
-                const SnackBar(
-                  content: Text("Failed to refresh posts ..."),
-                  backgroundColor: Colors.red,
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Failed to refresh posts!"),
+                    backgroundColor: Colors.red,
+                  ),
                 );
               }
             },
