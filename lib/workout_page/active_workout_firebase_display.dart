@@ -79,17 +79,22 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
   List<Widget> _buildExpansionTileChildren(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot, int index, BuildContext context, FirestoreManager manager) {
     List<Widget> returnWidgets = [];
 
-    for(var workout in userWorkout) {
+
+
+    for(var workout in userWorkout) { //TODO remove debug cards
+      //lbs and edit button, reps and edit button, checkbox
+      //TODO
+      for(int i = 0; i < workout.reps.length; i++) {
+        returnWidgets.add(Text("Reps: ${workout.reps[i]}, Weight: ${workout.weight[i]}"));
+      }
+
       returnWidgets.add(
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //lbs and edit button, reps and edit button, checkbox
-              //TODO
-
-              const Text('Details:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Debug Data:', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text('Weight: ${workout.weight} lbs'),
               Text('Reps: ${workout.reps}'),
