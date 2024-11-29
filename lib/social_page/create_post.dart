@@ -18,6 +18,7 @@ class CreatePostState extends State<CreatePostPage>
 {
   String currentUserDisplayName = "";
   String userProfileImageURL = "";
+  String currentUserId = "";
 
   //Text field controllers
   final TextEditingController _descriptionController = TextEditingController();
@@ -43,9 +44,12 @@ class CreatePostState extends State<CreatePostPage>
 
         if (userDoc.exists) //If the information exists
         {
-          setState(() {
+          setState(()
+          {
+
             currentUserDisplayName = userDoc.get('displayName') ?? "Unknown User"; //Get the display name (error = unknown user)
             userProfileImageURL = userDoc.get('profileImageURL') ?? ""; //Get PFP (error = No picture)
+            currentUserId = uid;
           });
         }
       }
@@ -152,6 +156,8 @@ class CreatePostState extends State<CreatePostPage>
               onPressed: () async
               {
                 //Set the values of the variables based on text entered into to controller text fields
+
+                final userId = currentUserId;
                 final userDisplayName = currentUserDisplayName;
                 final userProfileImage = userProfileImageURL;
                 final description = _descriptionController.text;
@@ -176,6 +182,7 @@ class CreatePostState extends State<CreatePostPage>
                       final postDoc = await FirebaseFirestore.instance //Save the provided information
                           .collection('socialPosts')
                           .add({
+                        'userId': userId, //Include userID in post creation to allow deleting
                         'userDisplayName': userDisplayName,
                         'userProfileImageURL': userProfileImage,
                         'description': description,

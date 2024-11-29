@@ -32,28 +32,27 @@ class ReplyPageState extends State<ReplyPage> {
 
 
   Future<void> fetchUserData() async //Function to get user data
-      {
-    try {
+  {
+    try
+    {
       User? user = FirebaseAuth.instance
           .currentUser; //Get current user using token
 
-      if (user != null) {
+      if (user != null)
+      {
         String uid = user.uid; //set user uid
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection(
-            'users').doc(uid).get(); //Use uid to query database
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get(); //Use uid to query database
 
-        if (userDoc.exists) //Set values dependent on user
-            {
+        if (userDoc.exists) //Make sure user exists and grab info
+          {
           setState(() {
-            userDisplayName = userDoc['displayName'] ??
-                "Unknown User"; //If the name cant be found, set unknown (Should not happen)
-            userProfileImage = userDoc['profileImageURL'] ??
-                ""; //If PFP not found, set to no profile picture
-
+            userDisplayName = userDoc['displayName'] ?? "Unknown User"; //If the name cant be found, set unknown (Should not happen)
+            userProfileImage = userDoc['profileImageURL'] ?? ""; //If PFP not found, set to no profile picture
           });
         }
       }
-    } catch (e) //Output an error via snackbar
+    }
+    catch (e) //Output an error via snackbar
         {
       const SnackBar(
         content: Text("Failed to load user"),
@@ -72,17 +71,14 @@ class ReplyPageState extends State<ReplyPage> {
         //Add the reply data to the firebase
         await FirebaseFirestore.instance.collection('socialReplies').add({
           'postId': widget.postId,
-          // Reference the parent post (use post ID)
           'userDisplayName': userDisplayName,
           'userProfileImageURL': userProfileImage,
           'description': replyText,
-          'timeString': DateTime.now().toIso8601String(),
-          // ISO format for consistency
+          'timeString': DateTime.now().toIso8601String(), //Iso format for date sort efficiency
         });
 
         //Increment the comment count of the post commenting to
-        final postRef = FirebaseFirestore.instance.collection('socialPosts')
-            .doc(widget.postId);
+        final postRef = FirebaseFirestore.instance.collection('socialPosts').doc(widget.postId);
         await postRef.update({
           'numComments': FieldValue.increment(1)
         }); //Increment the comment count by 1
@@ -108,7 +104,8 @@ class ReplyPageState extends State<ReplyPage> {
 
   //Definition of page layout
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reply to Post'),

@@ -19,7 +19,8 @@ class SocialPage extends StatefulWidget
 class _SocialState extends State<SocialPage>
 {
   List<PostWidget> unsortedPosts = []; //List for posts
-  
+
+
   @override
   void initState()
   {
@@ -39,17 +40,17 @@ class _SocialState extends State<SocialPage>
       final querySnapshot = await FirebaseFirestore.instance.collection('socialPosts').get(); //Get values from table "socialPosts"
       setState(()
       {
-        //Put all values into unsortedPosts List
+        //put all posts in unsorted
         unsortedPosts = querySnapshot.docs.map((doc)
         {
           final data = doc.data();
-          final likedBy = List<String>.from(data['likedBy'] ?? []); //fetch list of users that liked the post from the post data
-          final isLiked = likedBy.contains(userId); //check if the current user liked the post
+          final likedBy = List<String>.from(data['likedBy'] ?? []);
+          final isLiked = likedBy.contains(userId); //Check if the post is liked by the current user
+          final isUserPost = data['userId'] == userId; //Check if the post belongs to the current user
 
-          //Get the post data and make a post widget
           return PostWidget(
-            key: ValueKey(doc.id),
-            postId: doc.id,
+            key: ValueKey(doc.id), //Unique Key
+            postId: doc.id, //Unique post id
             userDisplayName: data['userDisplayName'] ?? 'Unknown User',
             userProfileImageURL: data['userProfileImageURL'] ?? '',
             description: data['description'] ?? '',
@@ -57,10 +58,10 @@ class _SocialState extends State<SocialPage>
             timeString: DateFormat('M/d/yy - kk:mm').format(DateTime.parse(data['timeString'])),
             numComments: data['numComments'] ?? 0,
             numLikes: data['numLikes'] ?? 0,
-            onHide: _hidePost,
+            onDelete: _deletePost, //Handles deleting a post
             onReply: (context, post) => _navigateToRepliesPage(context, post),
-            initialIsLiked: isLiked, // Pass initial like state
-            onCommentAdded: () => _updateCommentCount(doc.id),
+            isLikedByCurrentUser: isLiked,
+            isCurrentUserPost: isUserPost,
           );
         }).toList();
       });
@@ -74,69 +75,75 @@ class _SocialState extends State<SocialPage>
     }
   }
 
-  void _updateCommentCount(String postId) //Function to update comment count on main screen when a new one is added
-  {
-    setState(() {
-      for (var post in unsortedPosts) //Go through each post
-      {
-        if (post.postId == postId) //Until a post with the matching id is found
-        {
-          //Update the post with a new comment
-          final updatedPost = PostWidget(
-            key: ValueKey(post.postId),
-            postId: post.postId,
-            userDisplayName: post.userDisplayName,
-            userProfileImageURL: post.userProfileImageURL,
-            description: post.description,
-            imageURL: post.imageURL,
-            timeString: post.timeString,
-            numComments: post.numComments + 1,
-            numLikes: post.numLikes,
-            onHide: _hidePost,
-            onReply: post.onReply,
-            initialIsLiked: post.initialIsLiked,
-            onCommentAdded: post.onCommentAdded,
-          );
-
-          //Update the post in the current List
-          unsortedPosts[unsortedPosts.indexOf(post)] = updatedPost;
-          break;
-        }
-      }
-    });
-  }
-
-
-  void _navigateToRepliesPage(BuildContext context, PostWidget post) //Function to navigate to post replies
-  {
-    Navigator.push(
+  Future<void> _navigateToRepliesPage(BuildContext context, PostWidget post) //Function to navigate to post replies
+   async {
+     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PostRepliesPage(post: post), //Pass the selected post to the replies page
       ),
     );
+
+    setState(() {
       _loadPostsFromDB(); //Update the comment count
+    });
+
   }
 
-  void _hidePost(PostWidget post) //Temporarily hides a post until refresh for now
+  Future<void> _deletePost(PostWidget post) async //Function to delete a post and all comments
   {
-    setState(() {
-      unsortedPosts.remove(post); //Simply removes it from the current list
+    try
+    {
+      //Delete post
+      await FirebaseFirestore.instance.collection('socialPosts').doc(post.postId).delete();
+
+      //Get all comments for a post
+      final querySnapshot = await FirebaseFirestore.instance.collection('socialReplies').where('postId', isEqualTo: post.postId).get();
+
+      //Go through each comment and delete
+      for (var doc in querySnapshot.docs)
+      {
+        await doc.reference.delete();
+      }
+
+      //Show successful delete
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Your post has been successfully deleted!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+    catch (e) //Catch failed delete
+    {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Your post could not be deleted at this time. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+    setState(()
+    {
+       unsortedPosts = []; //Clear users displayed posts
     });
+    _loadPostsFromDB(); //Reload them all (Effectively removing the deleted post for users view)
   }
 
   //Sorts posts by date for fluent display
   List<PostWidget> _sortPostsByDate()
   {
-    unsortedPosts.sort((a, b) {
+    unsortedPosts.sort((a, b)
+    {
       final dateA = DateFormat('M/d/yy - kk:mm').parse(a.timeString);
       final dateB = DateFormat('M/d/yy - kk:mm').parse(b.timeString);
-      return dateB.compareTo(dateA); // Descending order
+      return dateB.compareTo(dateA); //Descending order
     });
     return unsortedPosts;
   }
 
-  //Design of page
+  //Design of social page
   @override
   Widget build(BuildContext context) {
 
@@ -175,12 +182,10 @@ class _SocialState extends State<SocialPage>
             {
               try
               {
-                _loadPostsFromDB(); //Call reload of posts
-
-                const SnackBar( //Output success
-                  content: Text("Posts successfully reloaded!"),
-                  backgroundColor: Colors.green,
-                );
+                setState(() {
+                  unsortedPosts = []; //Clears all posts
+                });
+                _loadPostsFromDB(); //Reloads all the posts
               }
               catch (e)
               {

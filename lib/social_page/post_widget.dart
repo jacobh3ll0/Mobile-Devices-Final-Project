@@ -16,10 +16,10 @@ class PostWidget extends StatefulWidget //Class which defines required variables
   final String imageURL; //Image (optional) to include with post
   final int numComments; //Number of comments
   final int numLikes; //Number of likes
-  final bool initialIsLiked; //Sets if the widget is liked by current user
-  final Function(PostWidget) onHide; //Allows widget to be hidden (for now temp locally)
+  final bool isLikedByCurrentUser; //Sets if the widget is liked by current user
+  final bool isCurrentUserPost; //to identify if current user is owner of post (For delete ability)
+  final Function(PostWidget) onDelete; //Allows widget to be deleted (Only if user is the one who post)
   final Function(BuildContext, PostWidget) onReply; //Handles replies to posts
-  final VoidCallback onCommentAdded; //Adds comment number for display
 
   const PostWidget({ //PostWidget Constructor
     super.key,
@@ -31,10 +31,10 @@ class PostWidget extends StatefulWidget //Class which defines required variables
     required this.imageURL,
     required this.numComments,
     required this.numLikes,
-    required this.onHide,
+    required this.onDelete,
     required this.onReply,
-    required this.initialIsLiked,
-    required this.onCommentAdded,
+    required this.isLikedByCurrentUser,
+    required this. isCurrentUserPost,
   });
 
   @override
@@ -52,25 +52,24 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
   {
     super.initState();
     //Set values passed to widget creation
-    _isLiked = widget.initialIsLiked;
+    _isLiked = widget.isLikedByCurrentUser;
     _likesCount = widget.numLikes;
     _commentCount = widget.numComments;
   }
 
   @override
-  void didUpdateWidget(PostWidget oldWidget) //Function to check if comments of widget changed (Work in progress)
+  void didUpdateWidget(PostWidget oldWidget) //Detects change in a widget and will update comment count
   {
     super.didUpdateWidget(oldWidget);
-    if (widget.numComments != oldWidget.numComments)
+    if (widget.numComments != oldWidget.numComments) //If comment count is different
     {
-      setState(()
-      {
-        _commentCount = widget.numComments;
+      setState(() {
+        _commentCount = widget.numComments; //Update it
       });
     }
   }
 
-  void _showHideConfirmation(BuildContext context) //Function to hide a tweet widget
+  void _showDeleteConfirmation(BuildContext context) //Function to handle deleting for widget
   {
     showDialog(
       context: context,
@@ -78,14 +77,14 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
       {
         //Display alert box with prompt
         return AlertDialog(
-          title: Text('Hide Post'),
-          content: Text('Would you like to hide this tweet?'),
+          title: Text('Delete Post'),
+          content: Text('Are you sure you want to delete your post?'),
           actions: [
-            TextButton( //Hide button definition
-              child: Text('Hide'), //Hide button text
+            TextButton( //Delete button definition
+              child: Text('Yes, delete my post'), //Delete button text
               onPressed: () {
                 Navigator.of(context).pop();
-                widget.onHide(widget); //Call the widget onHide Function passed with each widget definition
+                widget.onDelete(widget); //Call the widget delete Function passed with each widget definition
               },
             ),
             TextButton( //Cancel button
@@ -205,15 +204,16 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
                     ),
                     
                     //Hide post button
-                    IconButton( //Function of hide button
-                      icon: Icon(
+                    if (widget.isCurrentUserPost)
+                      IconButton(
+                        icon: Icon(
                           Icons.expand_more,
-                          size: widget.baseTextSize),
-                      onPressed: ()
-                      {
-                        _showHideConfirmation(context); //Send this tweet to the hide confirmation
-                      },
-                    ),
+                          size: widget.baseTextSize,
+                        ),
+                        onPressed: () {
+                          _showDeleteConfirmation(context); //Trigger delete confirmation
+                        },
+                      ),
                   ],
                 ),
                 //End of title definition
@@ -230,26 +230,29 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
 
                 const SizedBox(height: 12), //Space between text and image
 
-                if (widget.imageURL.isNotEmpty)  //Make sure the image URL is not empty
+                //Image definition
+                if (widget.imageURL.isNotEmpty) //Ensure the image URL is not empty
                   SizedBox(
-                    height: 200, //Set max height of image (ensure one post isnt size of entire screen due to image)
-                    child: Image.network(
-                      widget.imageURL,
-                      fit: BoxFit.contain, //Make sure image fits within constraints
-                      errorBuilder: (context, error, stackTrace) 
-                      {
-                        return const Text(
-                          'Image Failed to load, please try again later!', //Display error message if image does fail to load
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 12.0,
-                          ),
-                        );
-                      },
+                    height: 200, //Set max height of image
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0), //Round the corners of the image
+                      child: Image.network(
+                        widget.imageURL,
+                        fit: BoxFit.contain, //Ensure the image fits within constraints
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text(
+                            'Image Failed to load, please try again later!', //Display error message if image fails to load
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12.0,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   )
-                else //If nothing provided, display nothing
-                  const Text(''), // Fallback if no image URL is provided
+                else // If no image is provided, display nothing
+                  const Text(''), //Fallback if no image URL is provided
 
                 //End of body definition
 

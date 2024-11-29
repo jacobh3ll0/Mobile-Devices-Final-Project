@@ -9,7 +9,12 @@ import 'post_widget.dart';
 class PostRepliesPage extends StatefulWidget
 {
   final PostWidget post;
-  const PostRepliesPage({super.key, required this.post});
+
+  const PostRepliesPage(
+      {
+        super.key,
+        required this.post,
+      });
 
   @override
   _PostRepliesPageState createState() => _PostRepliesPageState();
@@ -29,7 +34,8 @@ class _PostRepliesPageState extends State<PostRepliesPage>
 
   Future<void> _loadReplies() async
   {
-    setState(() {
+    setState(()
+    {
       isLoading = true; //Set loading status to true (For circle loading)
     });
 
@@ -79,8 +85,7 @@ class _PostRepliesPageState extends State<PostRepliesPage>
     }
   }
 
-  void _navigateToReplyPage(BuildContext context) async //Go to the reply page to make reply
-  {
+  void _navigateToReplyPage(BuildContext context) async {
     final replyAdded = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -91,14 +96,9 @@ class _PostRepliesPageState extends State<PostRepliesPage>
       ),
     );
 
-    if (replyAdded == true) //Reload the replies once new one is added
+    if (replyAdded == true)
     {
-      await _loadReplies(); //Wait for all comments to load
-
-      //Update comment count
-      setState(() {
-        widget.post.onCommentAdded(); // Notify the PostWidget to update its comment count
-      });
+      await _loadReplies(); //Reload the replies
     }
   }
 
@@ -114,14 +114,150 @@ class _PostRepliesPageState extends State<PostRepliesPage>
           : Column(
 
         children: [
-
+          //THIS IS NOT IDEAL, but it is functional for now. Legit just rebuilt the widget for the replies page without the footer.
           //Show the post that the comments belong to at the top
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IgnorePointer(
-              child: widget.post, // Prevent any interaction with this widget
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey, //Border color
+                    width: 1.0,         //Border thickness
+                  ),
+                  borderRadius: BorderRadius.circular(8.0), //Rounded corners
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //Left column for Profile Picture
+                    Expanded(
+                      flex: 1, //Allocate 1/7 of width
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 3.0),
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.grey, //Fallback color
+                            child: widget.post.userProfileImageURL.isNotEmpty
+                                ? ClipOval(
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: SizedBox(
+                                  width: 100,
+                                  height: 100,
+                                  child: Image.network(
+                                    widget.post.userProfileImageURL,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.person,
+                                        size: 80,
+                                        color: Colors.black,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            )
+                                : const Icon(
+                              Icons.person,
+                              size: 40,
+                              color: Colors.black, //Fallback icon
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    //Right column for Post Content
+                    Expanded(
+                      flex: 6, //Allocate 6/7 of space
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0), //Padding for aesthetics
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //Title Section
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      //User Display Name
+                                      Text(
+                                        widget.post.userDisplayName,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 4), //Spacing between name and date
+
+                                      //Date and Time
+                                      Text(
+                                        widget.post.timeString,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 8), //Spacing between title and body
+
+                            // Description
+                            Text(
+                              widget.post.description,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+
+                            const SizedBox(height: 12), //Space between text and image
+
+                            // Image (if any)
+                            if (widget.post.imageURL.isNotEmpty)
+                              SizedBox(
+                                height: 200,
+                                child: Image.network(
+                                  widget.post.imageURL,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Text(
+                                      'Image Failed to load, please try again later!',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 12.0,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
+
+
+          //This just passes the whole widget, out for now as I was having issues getting comments to update count
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: IgnorePointer(
+          //     child: widget.post, // Prevent any interaction with this widget
+          //   ),
+          // ),
 
           const Divider(),
 
@@ -173,7 +309,7 @@ class _PostRepliesPageState extends State<PostRepliesPage>
                   trailing: Text(
                     DateFormat('M/d/yy - kk:mm').format( //Sets the date format from ISO to standard date layout (I kept it iso cause ISO is faster for sorting
                       DateTime.parse(reply['timeString']),
-                    ), // Convert ISO to readable format
+                    ), // Convert ISO to human readable format
                   ),
                 );
               },
