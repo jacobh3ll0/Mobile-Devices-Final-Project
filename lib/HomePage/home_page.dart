@@ -61,7 +61,6 @@ class HomePageState extends State<HomePage>
     }
   }
 
-
   // const HomePage({super.key});
   @override
   Widget build(BuildContext context)
@@ -71,9 +70,21 @@ class HomePageState extends State<HomePage>
 
     return Scaffold(
       appBar: AppBar(
-        leading: buildIconButtonProfile(),
-          title: buildContainerTimeUser(),
-          actions: [buildIconButtonTheme()],
+          backgroundColor: Colors.grey,
+          leading: Padding(
+          padding: const EdgeInsets.fromLTRB(8,0,0,8),
+          child: buildContainerIconOutline(),
+        ),
+          centerTitle: true,
+          title: Padding(
+            padding: const EdgeInsets.fromLTRB(0,0,0,8),
+            child: buildColumnGreeting(),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,0,8,8),
+              child: buildContainerThemeOutline(),
+            )],
           automaticallyImplyLeading: false),
       body:
           buildStackHomePage()
@@ -94,8 +105,9 @@ Widget buildStackHomePage()
 Widget buildPositionBackground()
 {
   return Positioned.fill(
-      child: Image.asset('lib/HomePage/test.gif',
-          fit: BoxFit.cover));
+      child: Container(
+      color: Colors.white54,
+  ));
 }
 
 
@@ -104,7 +116,7 @@ Widget buildAlignHomePage()
   return Align(
       alignment: Alignment.topLeft,
       child: Padding(
-        padding: EdgeInsets.only(top: 50.0),
+        padding: EdgeInsets.all(14),
         child: buildColumnHomePage(),
       )
   );
@@ -115,79 +127,115 @@ Widget buildColumnHomePage()
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      buildRowTimeRank(),
-      buildSizedBox(),
-      buildContainerQuote(),
-      buildSizedBox(),
+      buildContainerMainModule(),
+      buildSizedBoxVertical(),
+      buildContainerSecondModule()
     ],
   );
 }
 
 
-Widget buildContainerTimeUser()
+Widget buildContainerMainModule()
 {
   return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.circular(12.0),
+    width: double.infinity,
+    height: 200,
+    padding: EdgeInsets.all(8.0),
+    decoration: BoxDecoration(
+      color: Colors.purpleAccent,
+      borderRadius: BorderRadius.circular(12.0),
+    ),
+    child: buildStackMainModule(),
+  );
+}
+
+Widget buildStackMainModule()
+{
+  return Stack(
+    children: [
+      buildPositionedMainModuleRight(),
+      buildPositionedMainModuleLeft(),
+    ],
+  );
+}
+
+
+Widget buildPositionedMainModuleRight()
+{
+  return Positioned(
+      right: 0,
+      top: 0,
+      bottom: 0,
+      child:buildConstrainedBoxRank()
+
+  );
+}
+
+
+Widget buildConstrainedBoxRank()
+{
+  return ConstrainedBox(
+    constraints: BoxConstraints(
+      maxWidth: 250,
+    ),
+    child: buildIconButtonRank(),
+  );
+}
+
+
+Widget buildIconButtonRank()
+{
+  return IconButton(
+    // icon: Icon(Icons.add),
+    icon: Image.asset('Assets/Images/Ranks/Diamond_3_Rank.png'),
+    onPressed: (){
+      print("object");
+    },
+  );
+}
+
+
+
+Widget buildPositionedMainModuleLeft()
+{
+  return Positioned(
+      left: 0,
+      top: 0,
+      bottom: 0,
+      child: buildColumnMainModule()
+  );
+}
+
+
+
+Widget buildColumnMainModule()
+{
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      buildTextRank(),
+      buildSizedBoxVertical(),
+      buildConstrainedBoxRankQuote()
+    ],
+  );
+}
+
+Widget buildTextRank()
+{
+  return Text('DIAMOND', style: rankStyle());
+}
+
+Widget buildConstrainedBoxRankQuote()
+{
+  return ConstrainedBox(
+      constraints: BoxConstraints(
+      maxWidth: 250,
       ),
-      child: buildTextTime()
+    child: buildTextQuote(),
   );
 }
 
-Widget buildTextTime()
-{
-  return Text(
-      getTime(),
-      style: timeStyle()
-  );
-}
-
-
-String calcTOD(int time)
-{
-  if (time >= 500 && time < 1159)
-  {
-    return "Good Morning! $time";
-  }
-  else if (time >= 1200 && time < 1559)
-  {
-    return "Good Afternoon! $time";
-  }
-  else if (time >= 1600 && time < 1959)
-  {
-    return "Good Evening! $time";
-  }
-  else
-  {
-    return "Good Night! $time";
-  }
-
-}
-
-String getTime()
-{
-  final dt = DateTime.now();
-  final dt24 = DateFormat('HH:mm').format(dt);
-  final hour = dt.hour.toString().padLeft(2,'0');
-  final min = dt.minute.toString().padLeft(2,'0');
-  final inttime = int.parse('$hour$min');
-  return calcTOD(inttime);
-}
-
-
-Widget buildContainerQuote()
-{
-  return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: buildTextQuote()
-  );
-}
 
 Widget buildTextQuote()
 {
@@ -204,7 +252,9 @@ Widget buildTextQuote()
         return Text(
           '"${data['q']}" — ${data['a']}',
           textAlign: TextAlign.center,
-          style: timeStyle(),
+          style: quoteStyle(),
+          softWrap: true,
+            overflow: TextOverflow.visible,
         );
       }
       else
@@ -215,37 +265,112 @@ Widget buildTextQuote()
   );
 }
 
-
-Widget buildSizedBox()
+Widget buildContainerSecondModule()
 {
-  return SizedBox(
-      height: 16.0);
-}
-
-
-
-
-
-
-
-
-TextStyle timeStyle()
-{
-  return const TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: Colors.black, // Text color
-
+  return Container(
+    height: 100.0, // Set a fixed height for the blue container
+    child: buildRowSecondModule(),
   );
 }
 
-TextStyle quoteStyle() {
-  return const TextStyle(
-    fontSize: 30,
-    fontWeight: FontWeight.bold,
-    color: Colors.black,
+Widget buildRowSecondModule()
+{
+  return Row(
+    children: [
+      buildExpandedCalender(),
+      SizedBox(width: 8,),
+      buildExpandedStreak()
+    ],
   );
 }
+
+Widget buildExpandedCalender()
+{
+  return Expanded(
+    flex: 3,
+      child: buildContainerCalender());
+}
+
+Widget buildContainerCalender()
+{
+  return Container(
+      height: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Text('Calender')
+  );
+}
+
+Widget buildExpandedStreak()
+{
+  return Expanded(
+      flex: 1,
+      child: buildContainerStreak());
+}
+
+Widget buildContainerStreak()
+{
+  return Container(
+      padding: EdgeInsets.all(16.0),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.orangeAccent,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: IconButton(
+          onPressed: (){
+            print("object");
+          },
+          icon: Icon(Icons.local_fire_department))
+  );
+}
+
+
+Widget buildTextTime()
+{
+  return Text(
+      getTime(),
+      style: timeStyle()
+  );
+}
+
+
+String calcTOD(int time)
+{
+  if (time >= 500 && time < 1159)
+  {
+    return "Good Morning,";
+  }
+  else if (time >= 1200 && time < 1559)
+  {
+    return "Good Afternoon,";
+  }
+  else if (time >= 1600 && time < 1959)
+  {
+    return "Good Evening,";
+  }
+  else
+  {
+    return "Good Night,";
+  }
+
+}
+
+String getTime()
+{
+  final dt = DateTime.now();
+  final dt24 = DateFormat('HH:mm').format(dt);
+  final hour = dt.hour.toString().padLeft(2,'0');
+  final min = dt.minute.toString().padLeft(2,'0');
+  final inttime = int.parse('$hour$min');
+  return calcTOD(inttime);
+}
+
+
+
 
 Future<Map<String, dynamic>> getQuote() async
 {
@@ -259,46 +384,135 @@ Future<Map<String, dynamic>> getQuote() async
 }
 
 
+
+Widget buildContainerIconOutline()
+{
+  return Container(
+    decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black,
+          width: 2.0,
+        ),
+      borderRadius: BorderRadius.circular(100.0),
+  ),
+    child: buildIconButtonProfile(),
+  );
+}
+
 Widget buildIconButtonProfile()
 {
   return IconButton(
-    icon: Image.asset('lib/HomePage/profile.png',
-    width: 32.0, // Image size
-    height: 32.0,
-  ),
-    onPressed: () {
-      print("Image Button Pressed");
-    });
+    icon: Image.asset('Assets/Images/profile.PNG'),
+    iconSize: 32.0,
+    onPressed: (){
+      print("object");
+    },
+  );
+
+
+}
+Widget buildContainerThemeOutline()
+{
+  return Container(
+    decoration: BoxDecoration(
+      border: Border.all(
+        color: Colors.black,
+        width: 2.0,
+
+      ),
+      borderRadius: BorderRadius.circular(100.0),
+    ),
+    child: buildIconButtonTheme(),
+  );
 }
 
 Widget buildIconButtonTheme()
 {
   return IconButton(
-      icon: Icon(Icons.brush),
+      icon: Icon(Icons.settings),
       onPressed: () {
         print("Image Button Pressed");
       },
-  iconSize: 40.0, // Customize the icon size
-  color: Colors.blue); // Customize the icon color);
+  iconSize: 30.0, // Customize the icon size
+  color: Colors.black); // Customize the icon color);
 }
 
-Widget buildRowTimeRank()
+
+
+
+Widget buildColumnGreeting()
 {
-  return Row(
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      buildContainerTime(),
-      buildSizedBox(),
-      buildContainerRank()
+      buildTextTime(),
+      buildTextUsername()
     ],
   );
 }
 
-Widget buildContainerTime()
+Widget buildTextUsername()
 {
-  return Container();
+  return Text('USER', style: usernameStyle());
 }
 
-Widget buildContainerRank()
+Widget buildSizedBoxVertical()
 {
-  return Container();
+  return SizedBox(height: 16.0);
 }
+
+
+Widget buildSizedBoxHorizontal()
+{
+  return SizedBox(width: 8);
+}
+
+TextStyle timeStyle()
+{
+  return const TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.black, // Text color
+
+  );
+}
+
+TextStyle usernameStyle()
+{
+  return const TextStyle(
+    fontSize: 16,
+    color: Colors.black,
+  );
+}
+
+TextStyle rankStyle()
+{
+  return const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: Colors.black
+  );
+}
+
+TextStyle quoteStyle()
+{
+  return const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    shadows: [
+      Shadow(
+        offset: Offset(1.0, 1.0),
+        blurRadius: 3.0,
+        color: Colors.black
+      )
+    ]
+  );
+}
+
+
+
+
+
+
+
