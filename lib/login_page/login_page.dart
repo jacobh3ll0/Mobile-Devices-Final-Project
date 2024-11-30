@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -44,7 +45,8 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
     );
   }
 
-  void _initializeNotifications() async {
+  void _initializeNotifications() async
+  {
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -53,16 +55,56 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
     await _notificationsPlugin.initialize(initializationSettings);
   }
 
+    Future<bool> verifyAccount(String email) async //Function to make sure that the user account contains all required information
+    {
+      try
+      {
+        final querySnapshot = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: email).get();
+
+        if (querySnapshot.docs.isEmpty)
+        {
+          return false;
+        }
+
+        final userDoc = querySnapshot.docs.first;
+        final userData = userDoc.data();
+
+        final isValid = userData['displayName']?.isNotEmpty == true &&
+            userData['email']?.isNotEmpty == true &&
+            userData['gender']?.isNotEmpty == true &&
+            userData['gymExperience']?.isNotEmpty == true;
+
+        return isValid; //return true if all fields are found
+      }
+      catch (e)
+      {
+        print("Error checking user profile completeness: $e"); //Should not happen, left as debug
+        return false; //Return false if an error occurs
+      }
+    }
+
   Future<void> _login(BuildContext context, String email, String password) async //Handles login attempt
   {
     try
     {
       //Attempt to sign on given inputted user email and password
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.toLowerCase(), password: password);
-      String? token = await userCredential.user!.getIdToken(); //Retrieve the ID token for the user
-      widget.loginUser(token!); //Pass the token back to AppLaunch to login the user
 
-      _sendNotification("Login Successful", "Welcome back, $email!");
+      if(await verifyAccount(email.toLowerCase())) //Make sure the account contains all the required details. (Errors can arise if you close app during account creation)
+        {
+          String? token = await userCredential.user!.getIdToken(); //Retrieve the ID token for the user
+          widget.loginUser(token!); //Pass the token back to AppLaunch to login the user
+          _sendNotification("Login Successful", "Welcome back, $email!");
+        }
+      else
+        {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Your account contains errors ... Contact the application developer'), //Error message
+              backgroundColor: Colors.red, //Set color red
+            ),
+          );
+        }
     }
     catch (e) //If the database fails to find the users information, output the error in snackbar
     {

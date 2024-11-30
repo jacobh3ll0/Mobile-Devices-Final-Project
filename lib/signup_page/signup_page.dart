@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'profile_creation_page.dart';
@@ -10,8 +11,9 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
   final TextEditingController _confirmPasswordController = TextEditingController();
 
 
-  Future<void> _signUp(BuildContext context) async //Function to handle a signup attempt
+  Future<bool> _signUp(BuildContext context) async //Function to handle a signup attempt
   {
+
     try //Try inputted information
     {
 
@@ -25,6 +27,37 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
         ),
       );
 
+      return true;
+
+    }
+    on FirebaseAuthException catch (e) //Firebase exception handling
+    {
+      String errorMessage;
+
+      // Handle specific Firebase Authentication errors
+      if (e.code == 'email-already-in-use') {
+        errorMessage =
+        'This email address is already in use. Please try logging in instead.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage =
+        'The email address is invalid. Please provide a valid email!';
+      } else if (e.code == 'weak-password')
+      {
+        errorMessage =
+        'The password is too weak. Please provide a stronger password.';
+      } else
+      {
+        errorMessage = 'Account creation failed. Please try again later.';
+      }
+
+      // Show the error in a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
     }
     catch (e) //If signup fails, output error to snackbar (This should only happen in error, my input validation should catch any errors)
     {
@@ -34,9 +67,8 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
           backgroundColor: Colors.red, //Set color red
         ),
       );
-
-      Navigator.pop(context); //Return to the login page (Account creation failed)
     }
+    return false;
   }
 
   @override
@@ -202,9 +234,13 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                         else
                           {
                             //Wait for the signup to complete -> Requires profile completion and preferences filled out before being done
-                            await _signUp(context);
+                            final bool signupSuccess = await _signUp(context);
 
-                            Navigator.pop(context); //Return to login after full account is made
+                            if(signupSuccess)
+                              {
+                                Navigator.pop(context); //Return to login after full account is made
+                              }
+
                           }
                       }
                     }
@@ -213,7 +249,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                       ScaffoldMessenger.of(context).showSnackBar(
                         // Output error
                         SnackBar(
-                          content: Text('ALL FIELDS ARE REQUIRED!'),
+                          content: Text('All fields are required!'),
                           backgroundColor: Colors.red,
                         ),
                       );

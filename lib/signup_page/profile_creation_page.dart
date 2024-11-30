@@ -26,7 +26,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
   String? _selectedGender; //stores answer for gender (default unselected/null)
 
 
-  Future<void> SaveProfileData(BuildContext context) async
+  Future<bool> SaveProfileData(BuildContext context) async
   {
     try
     {
@@ -46,7 +46,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
             backgroundColor: Colors.red,
           ),
         );
-        return; //prevent from going further
+        return false; //prevent from going further
       }
 
       //Insert the user inputted information into the database
@@ -65,7 +65,11 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
         context,
         MaterialPageRoute(builder: (context) => SignupProfilePreferencesPage()),
       );
+
+      return true;
     }
+
+
 
     catch (e) //Catch an error inserting data. Should never happen since information validation
     {
@@ -75,6 +79,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
           backgroundColor: Colors.red,
         ),
       );
+      return false;
     }
   }
 
@@ -366,8 +371,13 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                   //Make sure required values are filled
                 if (_displayNameController.text.isNotEmpty && _gymExperience != null && _selectedGender != null)
                   {
-                    await SaveProfileData(context); //Wait until the user data is saved to the database, and signup preferences is done
-                    Navigator.pop(context); //Return to signup page, to then return to login
+                    bool profileCreationSuccess = await SaveProfileData(context); //Wait until the user data is saved to the database, and signup preferences is done
+
+                    if(profileCreationSuccess)
+                      {
+                        Navigator.pop(context); //Return to signup page, to then return to login
+                      }
+
                   }
                 else //Otherwise output an error
                   {
