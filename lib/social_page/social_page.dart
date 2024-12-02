@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -68,12 +70,16 @@ class _SocialState extends State<SocialPage>
     }
     catch (e) //Error if load fails
     {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed to load posts!"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to load posts!"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        log("Widget out of tree, cannot show SnackBar");
+      }
     }
   }
 

@@ -46,7 +46,6 @@ class _BuildBottomNavigationBarState extends State<BuildBottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-
     return BottomNavigationBar(
       currentIndex: widget.getIndex(),
       onTap: (index) {
