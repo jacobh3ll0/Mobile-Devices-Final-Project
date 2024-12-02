@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 // import 'package:geolocator/geolocator.dart';
 // import 'package:geocoding/geocoding.dart';
@@ -304,18 +305,6 @@ Widget buildExpandedCalender()
       child: buildContainerCalender());
 }
 
-Widget buildContainerCalender()
-{
-  return Container(
-      height: double.infinity,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Text('Calender')
-  );
-}
 
 Widget buildExpandedStreak()
 {
@@ -433,15 +422,6 @@ Widget buildContainerThemeOutline()
   );
 }
 
-// Widget buildIconButtonTheme()
-// {
-//   return IconButton(
-//       icon: Icon(Icons.settings),
-//       onPressed: () {
-//         print("Image Button Pressed");
-//       },
-//   color: Colors.black);
-// }
 
 Widget buildPopupMenuTheme() {
   return PopupMenuButton<int>(
@@ -535,6 +515,88 @@ TextStyle quoteStyle()
     ]
   );
 }
+
+Widget buildContainerCalender()
+{
+  return Container(
+      height: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: buildListViewCalender()
+  );
+}
+
+Widget buildListViewCalender()
+{
+  List<String> daysOfWeek = [
+    "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+  ];
+  return ListView.builder(
+    scrollDirection: Axis.horizontal,
+    itemCount: 7,
+    itemBuilder: (context, index)
+    {
+      return buildContainerCalenderDay(daysOfWeek, index);
+      },
+    );
+}
+
+
+Widget buildContainerCalenderDay(List<String> daysOfWeek, int index)
+{
+  return Padding(
+    padding: const EdgeInsets.all(5.0),
+    child: Container(
+      alignment: Alignment.center,
+      color: Colors.purpleAccent,
+      child: buildWrapCalender(daysOfWeek, index),
+    ),
+  );
+}
+
+Widget buildWrapCalender(List<String> daysOfWeek, int index)
+{
+  return Wrap(
+    crossAxisAlignment: WrapCrossAlignment.center,
+    direction: Axis.vertical,
+    children: [
+      buildIconCalender(),
+      buildSizedBoxVertical(),
+      Text(daysOfWeek[index], style: dayofweekStyle()),
+      Text(DateTime.now().subtract(Duration(days: index - 4)).day.toString())
+    ],
+  );
+}
+
+Widget buildIconCalender()
+{
+  return Icon(Icons.fiber_manual_record);
+}
+
+// Bool didWorkout(int index,)
+// {
+//   String todayDate = DateTime.now().subtract(Duration(days: index - 4)).day.toString();
+//   return
+// }
+
+TextStyle dayofweekStyle()
+{
+  return const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+
+  );
+}
+
+
+
+
+
+
 
 
 
