@@ -71,6 +71,18 @@ class HomePageState extends State<HomePage>
     }
   }
 
+  bool didWorkout(currentDay)
+  {
+    if (daysWorkedOut.contains(currentDay))
+      {
+        return true;
+      }
+    else
+      {
+        return false;
+      }
+  }
+
   Future<void> fetchCalendarData() async {
     List<String> keys = await manager.getKeysForGroupedByDay();
     for(var item in keys) {
@@ -142,20 +154,10 @@ Widget buildStackHomePage(List<String> daysWorkedOut)
 {
   return Stack(
     children: [
-      buildPositionBackground(),
       buildAlignHomePage(daysWorkedOut)
     ],
   );
 }
-
-Widget buildPositionBackground()
-{
-  return Positioned.fill(
-      child: Container(
-      color: Colors.white54,
-  ));
-}
-
 
 Widget buildAlignHomePage(List<String> daysWorkedOut)
 {
@@ -188,7 +190,7 @@ Widget buildContainerMainModule()
     height: 200,
     padding: EdgeInsets.all(8.0),
     decoration: BoxDecoration(
-      color: Colors.purpleAccent,
+      color: Colors.red,
       borderRadius: BorderRadius.circular(12.0),
     ),
     child: buildStackMainModule(),
@@ -260,17 +262,17 @@ Widget buildColumnMainModule()
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisAlignment: MainAxisAlignment.end,
     children: [
-      buildTextRank(),
+      // buildTextRank(),
       buildSizedBoxVertical(),
       buildConstrainedBoxRankQuote()
     ],
   );
 }
 
-Widget buildTextRank()
-{
-  return Text('DIAMOND', style: rankStyle());
-}
+// Widget buildTextRank()
+// {
+//   return Text('DIAMOND', style: rankStyle());
+// }
 
 Widget buildConstrainedBoxRankQuote()
 {
@@ -337,19 +339,6 @@ Widget buildExpandedCalender()
       child: buildContainerCalender());
 }
 
-Widget buildContainerCalender()
-{
-  return Container(
-      height: double.infinity,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: const Text('Calender')
-  );
-}
-
 
 Widget buildContainerStreak(List<String> daysWorkedOut)
 {
@@ -393,7 +382,6 @@ Widget buildTextTime()
   );
 }
 
-
 String calcTOD(int time)
 {
   if (time >= 500 && time < 1159)
@@ -412,7 +400,6 @@ String calcTOD(int time)
   {
     return "Good Night,";
   }
-
 }
 
 String getTime()
@@ -425,7 +412,6 @@ String getTime()
   return calcTOD(inttime);
 
 }
-
 
 Future<Map<String, dynamic>> getQuote() async
 {
@@ -582,7 +568,7 @@ Widget buildContainerCalender()
       height: double.infinity,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.red,
+        color: Colors.redAccent,
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: buildListViewCalender()
@@ -611,7 +597,7 @@ Widget buildContainerCalenderDay(List<String> daysOfWeek, int index)
     padding: const EdgeInsets.all(5.0),
     child: Container(
       alignment: Alignment.center,
-      color: Colors.purpleAccent,
+      color: Colors.white,
       child: buildWrapCalender(daysOfWeek, index),
     ),
   );
