@@ -145,7 +145,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
 
   //list of pages
   late final List<Widget> _pages = [
-    const HomePage(),
+    HomePage(navigateToHomePageCallback: _setNavigationToProfilePage,),
     NutritionPage(),
     const WorkoutPage(),
     const SocialPage(),
@@ -166,11 +166,18 @@ class _HomeNavigatorState extends State<HomeNavigator> {
   void _onNavigationButtonTap(int index) {
     setState(() {
       _currentPageIndex = index;
+      // updateIcon();
     });
   }
 
   int _getCurrentSelectedIndex() {
     return _currentPageIndex;
+  }
+
+  void _setNavigationToProfilePage() {
+    setState(() {
+      _currentPageIndex = 4;
+    });
   }
 
 }

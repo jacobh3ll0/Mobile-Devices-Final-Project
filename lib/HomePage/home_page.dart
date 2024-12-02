@@ -18,7 +18,9 @@ import 'package:md_final/workout_page/firestore_manager.dart';
 
 class HomePage extends StatefulWidget
 {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.navigateToHomePageCallback});
+
+  final Function navigateToHomePageCallback;
 
   @override
   HomePageState createState() => HomePageState();
@@ -29,13 +31,14 @@ class HomePageState extends State<HomePage>
   Map<String, dynamic>? userData; //Map to store the fetched user data from DB
   String currentUser = "";
   FirestoreManager manager = FirestoreManager();
+  late List<String> daysWorkedOut;
 
   @override
   void initState()
   {
-    super.initState();
     fetchUserData(); //Gets the users name, really inefficient, however funcitonal for now
     fetchCalendarData();
+    super.initState();
   }
 
   Future<void> fetchUserData() async //Function to handle retrieving the user data
@@ -72,6 +75,7 @@ class HomePageState extends State<HomePage>
     for(var item in keys) {
       log("date: $item");
     }
+    daysWorkedOut = keys;
   }
 
   // const HomePage({super.key});
@@ -85,9 +89,9 @@ class HomePageState extends State<HomePage>
       appBar: AppBar(
           backgroundColor: Colors.grey,
           leading: Padding(
-          padding: const EdgeInsets.fromLTRB(8,0,0,8),
-          child: buildContainerIconOutline(),
-        ),
+            padding: const EdgeInsets.fromLTRB(8,0,0,8),
+            child: buildContainerIconOutline(buildIconButtonProfile),
+          ),
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.fromLTRB(0,0,0,8),
@@ -100,17 +104,45 @@ class HomePageState extends State<HomePage>
             )],
           automaticallyImplyLeading: false),
       body:
-          buildStackHomePage()
+          buildStackHomePage(daysWorkedOut)
     );
   }
+
+  Widget buildIconButtonProfile()
+  {
+    return GestureDetector(
+      onTap: () {
+        widget.navigateToHomePageCallback();
+      },
+      child: CircleAvatar(
+        radius: 50,
+        backgroundImage: userData != null &&
+            userData?['profileImageURL'] != null &&
+            userData!['profileImageURL'].toString().isNotEmpty
+            ? NetworkImage(userData?['profileImageURL'])
+            : null,
+        child: userData == null ||
+            userData?['profileImageURL'] == null ||
+            userData!['profileImageURL'].toString().isEmpty
+            ? const Icon(
+          Icons.person,
+          size: 50,
+          color: Colors.grey, // Change background color of default profile picture for aesthetics
+        )
+            : null,
+      ),
+
+    );
+  }
+
 }
 
-Widget buildStackHomePage()
+Widget buildStackHomePage(List<String> daysWorkedOut)
 {
   return Stack(
     children: [
       buildPositionBackground(),
-      buildAlignHomePage()
+      buildAlignHomePage(daysWorkedOut)
     ],
   );
 }
@@ -124,25 +156,25 @@ Widget buildPositionBackground()
 }
 
 
-Widget buildAlignHomePage()
+Widget buildAlignHomePage(List<String> daysWorkedOut)
 {
   return Align(
       alignment: Alignment.topLeft,
       child: Padding(
         padding: EdgeInsets.all(14),
-        child: buildColumnHomePage(),
+        child: buildColumnHomePage(daysWorkedOut),
       )
   );
 }
 
-Widget buildColumnHomePage()
+Widget buildColumnHomePage(List<String> daysWorkedOut)
 {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       buildContainerMainModule(),
       buildSizedBoxVertical(),
-      buildContainerSecondModule()
+      buildContainerSecondModule(daysWorkedOut)
     ],
   );
 }
@@ -278,21 +310,21 @@ Widget buildTextQuote()
   );
 }
 
-Widget buildContainerSecondModule()
+Widget buildContainerSecondModule(List<String> daysWorkedOut)
 {
   return Container(
     height: 100.0, // Set a fixed height for the blue container
-    child: buildRowSecondModule(),
+    child: buildRowSecondModule(daysWorkedOut),
   );
 }
 
-Widget buildRowSecondModule()
+Widget buildRowSecondModule(List<String> daysWorkedOut)
 {
   return Row(
     children: [
       buildExpandedCalender(),
       SizedBox(width: 8,),
-      buildExpandedStreak()
+      buildExpandedStreak(daysWorkedOut)
     ],
   );
 }
@@ -313,32 +345,42 @@ Widget buildContainerCalender()
         color: Colors.red,
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: Text('Calender')
+      child: const Text('Calender')
   );
 }
 
-Widget buildExpandedStreak()
-{
-  return Expanded(
-      flex: 1,
-      child: buildContainerStreak());
-}
 
-Widget buildContainerStreak()
+Widget buildContainerStreak(List<String> daysWorkedOut)
 {
+  int streak = 0;
+  for(var date in daysWorkedOut) {
+    streak++;
+  }
+
   return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(2.0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.orangeAccent,
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: IconButton(
-          onPressed: (){
-            print("object");
-          },
-          icon: Icon(Icons.local_fire_department))
+      child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const FittedBox(
+              child: Icon(Icons.local_fire_department, size: 5000,),
+            ),
+            Text("$streak", style: streakStyle(),),
+          ]
+      )
   );
+}
+
+Widget buildExpandedStreak(List<String> daysWorkedOut)
+{
+  return Expanded(
+    flex: 1,
+    child: buildContainerStreak(daysWorkedOut));
 }
 
 
@@ -380,6 +422,7 @@ String getTime()
   final min = dt.minute.toString().padLeft(2,'0');
   final inttime = int.parse('$hour$min');
   return calcTOD(inttime);
+
 }
 
 
@@ -393,7 +436,7 @@ Future<Map<String, dynamic>> getQuote() async
   return quoteObject;
 }
 
-Widget buildContainerIconOutline()
+Widget buildContainerIconOutline(Function buildIconButtonProfile)
 {
   return Container(
     decoration: BoxDecoration(
@@ -408,17 +451,6 @@ Widget buildContainerIconOutline()
   );
 }
 
-Widget buildIconButtonProfile()
-{
-  return IconButton(
-    icon: Icon(Icons.person),
-    onPressed: (){
-      print("object");
-    },
-  );
-
-
-}
 Widget buildContainerThemeOutline()
 {
   return Container(
@@ -533,6 +565,22 @@ TextStyle quoteStyle()
         color: Colors.black
       )
     ]
+  );
+}
+
+TextStyle streakStyle()
+{
+  return const TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+      shadows: [
+        Shadow(
+            offset: Offset(2.0, 2.0),
+            blurRadius: 3.0,
+            color: Colors.black
+        )
+      ]
   );
 }
 
