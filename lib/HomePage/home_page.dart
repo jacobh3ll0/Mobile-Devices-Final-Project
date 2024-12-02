@@ -2,15 +2,17 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:geocoding/geocoding.dart';
+// import 'package:latlong2/latlong.dart';
+// import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:gif/gif.dart';
+// import 'package:flutter_animate/flutter_animate.dart';
+// import 'package:gif/gif.dart';
+// import 'Assets/Main_Themes.dart';
+// import 'Assets/Rank_Themes.dart';
 
 class HomePage extends StatefulWidget
 {
@@ -370,8 +372,6 @@ String getTime()
 }
 
 
-
-
 Future<Map<String, dynamic>> getQuote() async
 {
   final url = Uri.parse('https://zenquotes.io/api/today/');
@@ -380,10 +380,7 @@ Future<Map<String, dynamic>> getQuote() async
   List<dynamic> parsedQuote = jsonDecode(quoteData);
   Map<String, dynamic> quoteObject = parsedQuote[0];
   return quoteObject;
-
 }
-
-
 
 Widget buildContainerIconOutline()
 {
@@ -394,16 +391,16 @@ Widget buildContainerIconOutline()
           width: 2.0,
         ),
       borderRadius: BorderRadius.circular(100.0),
-  ),
-    child: buildIconButtonProfile(),
+  ), child: Center(
+      child: buildIconButtonProfile(),
+    ),
   );
 }
 
 Widget buildIconButtonProfile()
 {
   return IconButton(
-    icon: Image.asset('Assets/Images/profile.PNG'),
-    iconSize: 32.0,
+    icon: Icon(Icons.person),
     onPressed: (){
       print("object");
     },
@@ -418,27 +415,46 @@ Widget buildContainerThemeOutline()
       border: Border.all(
         color: Colors.black,
         width: 2.0,
-
       ),
       borderRadius: BorderRadius.circular(100.0),
     ),
-    child: buildIconButtonTheme(),
+    child: buildPopupMenuTheme(),
   );
 }
 
-Widget buildIconButtonTheme()
-{
-  return IconButton(
-      icon: Icon(Icons.settings),
-      onPressed: () {
-        print("Image Button Pressed");
-      },
-  iconSize: 30.0, // Customize the icon size
-  color: Colors.black); // Customize the icon color);
+// Widget buildIconButtonTheme()
+// {
+//   return IconButton(
+//       icon: Icon(Icons.settings),
+//       onPressed: () {
+//         print("Image Button Pressed");
+//       },
+//   color: Colors.black);
+// }
+
+Widget buildPopupMenuTheme() {
+  return PopupMenuButton<int>(
+    icon: Icon(Icons.brush),
+    onSelected: (value) {
+      if (value == 1) {
+        print("Option 1 Selected");
+      } else if (value == 2) {
+        print("Option 2 Selected");
+      }
+    },
+    itemBuilder: (context) =>
+    [
+      PopupMenuItem(
+        value: 1,
+        child: Text("Light"),
+      ),
+      PopupMenuItem(
+        value: 2,
+        child: Text("Dark"),
+      )
+    ],
+  );
 }
-
-
-
 
 Widget buildColumnGreeting()
 {
@@ -473,7 +489,6 @@ TextStyle timeStyle()
     fontSize: 18,
     fontWeight: FontWeight.bold,
     color: Colors.black, // Text color
-
   );
 }
 
