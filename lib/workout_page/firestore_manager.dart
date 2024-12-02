@@ -22,6 +22,29 @@ class FirestoreManager {
 
   }
 
+  Future<List<String>> getKeysForGroupedByDay() async {
+
+    List<WorkoutDataModel> userDataList = await getUserData(false);
+    //for each entry in user data, group it together
+    Map<String, List<WorkoutDataModel>> maps = {};
+    for(int i = 0; i < userDataList.length; i++) {
+
+      //extract time from the map
+      DateTime time = userDataList[i].time;
+
+      //get current date
+      String mapKey = "${time.year}-${time.month}-${time.day}";
+      if(maps.containsKey(mapKey)) {
+        maps[mapKey]?.add(userDataList[i]);
+      } else {
+        //doesn't contain key, so make it
+        maps[mapKey] = [userDataList[i]];
+      }
+    }
+
+    return maps.keys.toList();
+  }
+
   Future<List<WorkoutDataModel>> getUserData(bool keepOnlyToday) async {
     // log("fetching userdata", name: "firestore manager");
     final QuerySnapshot<Map<String, dynamic>> userData;
@@ -43,13 +66,13 @@ class FirestoreManager {
 
 
     } else {
-      log("this ran1");
+
       userData = await FirebaseFirestore.instance.collection('users').doc(uid).collection('workoutData').get();
       for (var workout in userData.docs) {
         maps.add(workout.data());
       }
-      log("this ran2");
-      log("maps: $maps");
+
+      // log("maps: $maps");
     }
     for (int i = 0; i < maps.length; i++) {
       userDataList.add(WorkoutDataModel.fromMap(maps[i], reference: userData.docs[i].reference));
@@ -82,9 +105,9 @@ class FirestoreManager {
   }
 
   Future<List<List<WorkoutDataModel>>> getUserDataGroupedByDay() async {
-    log("this ran");
+
     List<WorkoutDataModel> userDataList = await getUserData(false);
-    log("this ran2");
+
     //for each entry in user data, group it together
     Map<String, List<WorkoutDataModel>> maps = {};
     for(int i = 0; i < userDataList.length; i++) {

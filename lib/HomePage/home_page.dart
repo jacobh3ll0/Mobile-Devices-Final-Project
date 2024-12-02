@@ -9,6 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:md_final/workout_page/firestore_manager.dart';
 // import 'package:flutter_animate/flutter_animate.dart';
 // import 'package:gif/gif.dart';
 // import 'Assets/Main_Themes.dart';
@@ -26,12 +28,14 @@ class HomePageState extends State<HomePage>
 {
   Map<String, dynamic>? userData; //Map to store the fetched user data from DB
   String currentUser = "";
+  FirestoreManager manager = FirestoreManager();
 
   @override
   void initState()
   {
     super.initState();
     fetchUserData(); //Gets the users name, really inefficient, however funcitonal for now
+    fetchCalendarData();
   }
 
   Future<void> fetchUserData() async //Function to handle retrieving the user data
@@ -60,6 +64,13 @@ class HomePageState extends State<HomePage>
     catch (e) //If it fails to grab the users data, output debug.
         {
       print("FAILED TO GRAB THE USERS DATA: $e");
+    }
+  }
+
+  Future<void> fetchCalendarData() async {
+    List<String> keys = await manager.getKeysForGroupedByDay();
+    for(var item in keys) {
+      log("date: $item");
     }
   }
 
