@@ -1,74 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
 
-class CalendarContainer extends StatefulWidget {
-  @override
-  _CalendarContainerState createState() => _CalendarContainerState();
-}
-
-class _CalendarContainerState extends State<CalendarContainer> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-
+class EqualSizedBoxesWithListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8.0,
+    return Scaffold(
+      body: Center(
+        child: Container(
+          height: 100, // Define the height of the red container
+          width: double.infinity, // Make the container take the full width
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(12.0),
           ),
-        ],
-      ),
-      child: TableCalendar(
-        firstDay: DateTime.utc(2020, 1, 1),
-        lastDay: DateTime.utc(2030, 12, 31),
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
-        },
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        },
-        onFormatChanged: (format) {
-          if (_calendarFormat != format) {
-            setState(() {
-              _calendarFormat = format;
-            });
-          }
-        },
-        onPageChanged: (focusedDay) {
-          _focusedDay = focusedDay;
-        },
-        calendarStyle: CalendarStyle(
-          todayDecoration: BoxDecoration(
-            color: Colors.blueAccent,
-            shape: BoxShape.circle,
-          ),
-          selectedDecoration: BoxDecoration(
-            color: Colors.redAccent,
-            shape: BoxShape.circle,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal, // Horizontal scrolling
+            itemCount: 7, // 7 items for 7 days
+            itemBuilder: (context, index) {
+              return Container(
+                width: (MediaQuery.of(context).size.width / 7) - 8, // Divide screen width into 7
+                margin: EdgeInsets.all(4.0), // Add spacing between purple squares
+                decoration: BoxDecoration(
+                  color: Colors.purple,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.circle, color: Colors.black),
+                    SizedBox(height: 4.0), // Space between icon and text
+                    Text(
+                      getDayName(index),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 2.0), // Space between day and number
+                    Text(
+                      getDayNumber(index).toString(),
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),
     );
   }
+
+  // Helper function to get day names
+  String getDayName(int index) {
+    List<String> days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"];
+    return days[index];
+  }
+
+  // Helper function to get day numbers (mock values for this example)
+  int getDayNumber(int index) {
+    return [6, 5, 4, 3, 2, 1, 30][index];
+  }
 }
 
 void main() {
   runApp(MaterialApp(
-    home: Scaffold(
-      appBar: AppBar(title: Text("Calendar in Container")),
-      body: Center(child: CalendarContainer()),
-    ),
+    home: EqualSizedBoxesWithListView(),
   ));
 }
