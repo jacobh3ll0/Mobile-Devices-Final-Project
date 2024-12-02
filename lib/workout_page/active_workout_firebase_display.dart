@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/adapters/change_notifier_adapter.dart';
 import 'package:md_final/workout_page/clock_widget.dart';
 import 'package:md_final/workout_page/firestore_manager.dart';
+import 'package:md_final/workout_page/smallTextPopup.dart';
 import 'package:md_final/workout_page/workout_data_model.dart';
 
 
@@ -42,10 +45,8 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
           return Scaffold(
             appBar: AppBar(
               // title: const Text("Workout"),
-              title: ElevatedButton(onPressed: () {}, child: Text("Start Workout"),), centerTitle: true,
-              actions: const [
-                ClockWidget()
-              ],
+              title: _buildStartOrEndButton(manager),
+              centerTitle: true,
             ),
             // body: Container(color: Colors.blue,),
             body: ListView.builder(
@@ -61,13 +62,73 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
 
   }
 
+  Widget _buildStartOrEndButton(FirestoreManager manager) {
+
+    return FutureBuilder<bool>(
+      future: manager.doesTimeExist(), // a previously-obtained Future<String> or null
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasData) {
+          if(!snapshot.data!) {
+
+            //time is not in database, thus no workout
+            return ElevatedButton(onPressed: () {
+              //Store time in db
+              setState(() {
+                manager.storeCurrentTime();
+              });
+
+              }, child: const Text("Start Workout"),);
+
+          } else { // time in database
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(onPressed: () {
+                  setState(() {
+                    manager.deleteTime();
+                  });
+                  }, child: const Text("End Workout"),),
+                _buildClockWidgetFuture(manager),
+              ],
+            );
+
+          }
+        } else if (snapshot.hasError) {
+          return const Center(child: Text("Error fetching from Firebase"),);
+
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+
+  }
+
+  Widget _buildClockWidgetFuture(FirestoreManager manager) {
+    return FutureBuilder(
+        future: manager.readTime(),
+        builder: (BuildContext context, AsyncSnapshot<DateTime> snapshot) {
+          if (snapshot.hasData) {
+            return ClockWidget(time: snapshot.data!,);
+
+          } else if (snapshot.hasError) {
+            return const Center(child: Text("Error fetching from Firebase"),);
+
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+    );
+  }
+
   Widget _buildIndividualWorkout(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot,
       int index, BuildContext context, FirestoreManager manager) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ExpansionTile(
-          title: Text(userWorkout[0].workoutName),
+          title: Text(userWorkout[0].workoutName,),
           enableFeedback: true,
           // subtitle: Text('Muscle Group: ${userWorkout.muscleGroup}'),
           children: _buildExpansionTileChildren(userWorkout, snapshot, index, context, manager)
@@ -84,9 +145,37 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
     for(var workout in userWorkout) { //TODO remove debug cards
       //lbs and edit button, reps and edit button, checkbox
       //TODO
+      returnWidgets.add(Align(alignment: Alignment.centerLeft, child: const Text("Reps:")));
       for(int i = 0; i < workout.reps.length; i++) {
-        returnWidgets.add(Text("Reps: ${workout.reps[i]}, Weight: ${workout.weight[i]}"));
+        // returnWidgets.add(Text("Reps: ${workout.reps[i]}, Weight: ${workout.weight[i]}"));
+        returnWidgets.add(ListTile(
+          title: Text("${workout.reps[i]}"),
+          leading: Checkbox(
+            value: true, onChanged: (bool? value) {},
+          ),
+        ));
       }
+      returnWidgets.add(ListTile(
+          title: const Text("new set?"),
+          leading: Checkbox(
+            value: false, onChanged: (bool? value) async {
+              var userInput = await showNumberDialog(context);
+              if(userInput != null) {
+                log("$userInput");
+                //add to firebase and update UI
+                setState(() {
+                  workout.reps.add(double.parse(userInput["intNumber"].toString()).toInt());
+                  workout.weight.add(userInput["floatNumber"]!);
+
+                  log("editing workout: $workout");
+
+                  manager.editGrade(workout.reference!.id, workout);
+                });
+              }
+          },
+      )));
+
+
 
       returnWidgets.add(
         Padding(
