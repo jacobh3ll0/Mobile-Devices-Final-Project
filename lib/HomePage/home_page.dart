@@ -32,7 +32,7 @@ class HomePageState extends State<HomePage>
   Map<String, dynamic>? userData; //Map to store the fetched user data from DB
   String currentUser = "";
   FirestoreManager manager = FirestoreManager();
-  late List<String> daysWorkedOut;
+  late List<String> daysWorkedOut = [];
 
   @override
   void initState()
@@ -105,7 +105,7 @@ class HomePageState extends State<HomePage>
             )],
           automaticallyImplyLeading: false),
       body:
-          buildStackHomePage(daysWorkedOut)
+          buildStackHomePage()
     );
   }
 
@@ -127,7 +127,7 @@ class HomePageState extends State<HomePage>
             userData!['profileImageURL'].toString().isEmpty
             ? const Icon(
           Icons.person,
-          size: 50,
+          size: 40,
           color: Colors.grey, // Change background color of default profile picture for aesthetics
         )
             : null,
@@ -136,14 +136,13 @@ class HomePageState extends State<HomePage>
     );
   }
 
-}
 
-Widget buildStackHomePage(List<String> daysWorkedOut)
+Widget buildStackHomePage()
 {
   return Stack(
     children: [
       buildPositionBackground(),
-      buildAlignHomePage(daysWorkedOut)
+      buildAlignHomePage()
     ],
   );
 }
@@ -157,25 +156,25 @@ Widget buildPositionBackground()
 }
 
 
-Widget buildAlignHomePage(List<String> daysWorkedOut)
+Widget buildAlignHomePage()
 {
   return Align(
       alignment: Alignment.topLeft,
       child: Padding(
         padding: EdgeInsets.all(14),
-        child: buildColumnHomePage(daysWorkedOut),
+        child: buildColumnHomePage(),
       )
   );
 }
 
-Widget buildColumnHomePage(List<String> daysWorkedOut)
+Widget buildColumnHomePage()
 {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       buildContainerMainModule(),
       buildSizedBoxVertical(),
-      buildContainerSecondModule(daysWorkedOut)
+      buildContainerSecondModule()
     ],
   );
 }
@@ -233,7 +232,8 @@ Widget buildIconButtonRank()
 {
   return IconButton(
     // icon: Icon(Icons.add),
-    icon: Image.asset('Assets/Images/Ranks/Diamond_3_Rank.png'),
+    icon: Image.asset('Assets/Images/Ranks/dumbbell.png'),
+    // icon: Image.asset('Assets/Images/Ranks/Diamond_3_Rank.png'),
     onPressed: (){
       print("object");
     },
@@ -311,21 +311,21 @@ Widget buildTextQuote()
   );
 }
 
-Widget buildContainerSecondModule(List<String> daysWorkedOut)
+Widget buildContainerSecondModule()
 {
   return Container(
     height: 100.0, // Set a fixed height for the blue container
-    child: buildRowSecondModule(daysWorkedOut),
+    child: buildRowSecondModule(),
   );
 }
 
-Widget buildRowSecondModule(List<String> daysWorkedOut)
+Widget buildRowSecondModule()
 {
   return Row(
     children: [
       buildExpandedCalender(),
       SizedBox(width: 8,),
-      buildExpandedStreak(daysWorkedOut)
+      buildExpandedStreak()
     ],
   );
 }
@@ -337,51 +337,40 @@ Widget buildExpandedCalender()
       child: buildContainerCalender());
 }
 
-Widget buildContainerCalender()
-{
-  return Container(
-      height: double.infinity,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: const Text('Calender')
-  );
-}
 
+  Widget buildContainerStreak()
+  {
 
-Widget buildContainerStreak(List<String> daysWorkedOut)
-{
-  int streak = 0;
-  for(var date in daysWorkedOut) {
-    streak++;
+    int streak = 0;
+    for(var date in daysWorkedOut) {
+      streak++;
+    }
+
+    return Container(
+        padding: const EdgeInsets.all(2.0),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.orangeAccent,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const FittedBox(
+                child: Icon(Icons.local_fire_department, size: 5000,),
+              ),
+              Text("$streak", style: streakStyle(),),
+            ]
+        )
+    );
   }
 
-  return Container(
-      padding: const EdgeInsets.all(2.0),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.orangeAccent,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Stack(
-          alignment: Alignment.center,
-          children: [
-            const FittedBox(
-              child: Icon(Icons.local_fire_department, size: 5000,),
-            ),
-            Text("$streak", style: streakStyle(),),
-          ]
-      )
-  );
-}
 
-Widget buildExpandedStreak(List<String> daysWorkedOut)
+Widget buildExpandedStreak()
 {
   return Expanded(
     flex: 1,
-    child: buildContainerStreak(daysWorkedOut));
+    child: buildContainerStreak());
 }
 
 
@@ -652,7 +641,7 @@ TextStyle dayofweekStyle()
   );
 }
 
-
+}
 
 
 
