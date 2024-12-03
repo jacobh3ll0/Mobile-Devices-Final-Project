@@ -1,21 +1,11 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-// import 'package:geolocator/geolocator.dart';
-// import 'package:geocoding/geocoding.dart';
-// import 'package:latlong2/latlong.dart';
-// import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:md_final/workout_page/firestore_manager.dart';
-// import 'package:flutter_animate/flutter_animate.dart';
-// import 'package:gif/gif.dart';
-// import 'Assets/Main_Themes.dart';
-// import 'Assets/Rank_Themes.dart';
 
 class HomePage extends StatefulWidget
 {
@@ -37,7 +27,7 @@ class HomePageState extends State<HomePage>
   @override
   void initState()
   {
-    fetchUserData(); //Gets the users name, really inefficient, however funcitonal for now
+    fetchUserData(); //Gets the users name, really inefficient, however functional for now
     fetchCalendarData();
     super.initState();
   }
@@ -86,7 +76,7 @@ class HomePageState extends State<HomePage>
   Future<void> fetchCalendarData() async {
     List<String> keys = await manager.getKeysForGroupedByDay();
     for(var item in keys) {
-      log("date: $item");
+      // log("date: $item");
     }
     daysWorkedOut = keys;
   }
@@ -110,11 +100,11 @@ class HomePageState extends State<HomePage>
             padding: const EdgeInsets.fromLTRB(0,0,0,8),
             child: buildColumnGreeting(),
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0,0,8,8),
-              child: buildContainerThemeOutline(),
-            )],
+          // actions: [
+            // Padding(
+            //   padding: const EdgeInsets.fromLTRB(0,0,8,8),
+            //   child: buildContainerThemeOutline(),
+            // )],
           automaticallyImplyLeading: false),
       body:
           buildStackHomePage()
@@ -335,18 +325,18 @@ Widget buildRowSecondModule()
 {
   return Row(
     children: [
-      buildExpandedCalender(),
+      buildExpandedCalendar(),
       SizedBox(width: 8,),
       buildExpandedStreak()
     ],
   );
 }
 
-Widget buildExpandedCalender()
+Widget buildExpandedCalendar()
 {
   return Expanded(
     flex: 3,
-      child: buildContainerCalender());
+      child: buildContainerCalendar());
 }
 
 
@@ -361,8 +351,6 @@ Widget buildExpandedCalender()
       DateTime today = DateTime.parse(stringToday);
 
       DateTime currentDay = DateTime.parse(date);
-
-      log("today: $today, currentday: $currentDay, bool: ${today.subtract(Duration(days: streak)) == currentDay}");
 
       if(today.subtract(Duration(days: streak)) == currentDay) {
         streak++;
@@ -588,7 +576,7 @@ TextStyle streakStyle()
   );
 }
 
-Widget buildContainerCalender()
+Widget buildContainerCalendar()
 {
   return Container(
       height: double.infinity,
@@ -597,62 +585,68 @@ Widget buildContainerCalender()
         color: Colors.redAccent,
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: buildListViewCalender()
+      child: buildListViewCalendar()
   );
 }
 
-Widget buildListViewCalender()
+Widget buildListViewCalendar()
 {
   List<String> daysOfWeek = [
     "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
   ];
-  return ListView.builder(
-    scrollDirection: Axis.horizontal,
-    itemCount: 7,
-    itemBuilder: (context, index)
-    {
-      return buildContainerCalenderDay(daysOfWeek, index);
-      },
-    );
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: List.generate(
+      daysOfWeek.length,
+          (index) => buildContainerCalendarDay(daysOfWeek, index),
+    ),
+  );
 }
 
 
-Widget buildContainerCalenderDay(List<String> daysOfWeek, int index)
+Widget buildContainerCalendarDay(List<String> daysOfWeek, int index)
 {
+
   return Padding(
     padding: const EdgeInsets.all(5.0),
     child: Container(
       alignment: Alignment.center,
       color: Colors.white,
-      child: buildWrapCalender(daysOfWeek, index),
+      child: buildWrapCalendar(daysOfWeek, index),
     ),
   );
 }
 
-Widget buildWrapCalender(List<String> daysOfWeek, int index)
+Widget buildWrapCalendar(List<String> daysOfWeek, int index)
 {
   return Wrap(
     crossAxisAlignment: WrapCrossAlignment.center,
     direction: Axis.vertical,
     children: [
-      buildIconCalender(),
+      buildIconCalendar(DateTime.now().add(Duration(days: index - 5))),
       buildSizedBoxVertical(),
-      Text(daysOfWeek[index], style: dayofweekStyle()),
-      Text(DateTime.now().subtract(Duration(days: index - 4)).day.toString())
+      Text(daysOfWeek[(DateTime.now().add(Duration(days: index - 5)).weekday - 1) % 7]),
+      Text(DateTime.now().add(Duration(days: index - 5)).day.toString()),
     ],
   );
 }
 
-Widget buildIconCalender()
+Widget buildIconCalendar(DateTime dateTimeIndex)
 {
-  return Icon(Icons.fiber_manual_record);
-}
+  //prepare datetime object
+  DateTime time = dateTimeIndex;
+  String stringToday = "${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')}";
+  DateTime today = DateTime.parse(stringToday);
 
-// Bool didWorkout(int index,)
-// {
-//   String todayDate = DateTime.now().subtract(Duration(days: index - 4)).day.toString();
-//   return
-// }
+  for(String currentDay in daysWorkedOut) {
+    DateTime current = DateTime.parse(currentDay);
+
+    if(today == current) {
+      return Icon(Icons.fiber_manual_record);
+    }
+  }
+  return Icon(Icons.circle_outlined);
+}
 
 TextStyle dayofweekStyle()
 {
