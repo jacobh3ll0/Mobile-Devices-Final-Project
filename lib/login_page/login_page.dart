@@ -134,9 +134,19 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
           // Request notification permission from the user
           PermissionStatus status = await Permission.notification.request();
           if (status.isDenied) {
-            print("Notification permission denied"); // Log if permission is denied
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Notification Permissions Denied!"),
+                backgroundColor: Colors.red,
+              ),
+            );
           } else if (status.isGranted) {
-            print("Notification permission granted"); // Log if permission is granted
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Notification Permissions Granted!"),
+                backgroundColor: Colors.green,
+              ),
+            );
           }
         }
       }
@@ -195,7 +205,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                     ),
                   ),
 
-                  const SizedBox(height: 16), //Spacing for atheistics
+                  const SizedBox(height: 16), //Spacing for atheistic
 
                  //Handles password field
                   TextField(
