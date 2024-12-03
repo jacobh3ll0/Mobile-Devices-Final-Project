@@ -300,7 +300,7 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
                     _createFood(dialogSelectedUnit);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.deepOrange,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28.0),
@@ -365,7 +365,7 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: Colors.deepOrange,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28.0),
@@ -537,7 +537,7 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
                 ElevatedButton(
                   onPressed: _openCreateFoodDialog,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.deepOrange,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28.0),
@@ -548,7 +548,7 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context, selectedFoods),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.deepOrange,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28.0),

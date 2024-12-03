@@ -212,7 +212,7 @@ class _NutritionPageDashboardState extends State<NutritionPageDashboard> {
                         valueColor: AlwaysStoppedAnimation<Color>(
                           (weekData[selectedDayIndex] > goalValue)
                               ? Colors.red
-                              : Colors.purple,
+                              : Colors.deepOrange,
                         ),
                       ),
                     ),
@@ -263,7 +263,7 @@ class _NutritionPageDashboardState extends State<NutritionPageDashboard> {
                                     : 0.0,
                                 color: weekData[i] > goalValue
                                     ? Colors.red
-                                    : Colors.purple,
+                                    : Colors.deepOrange,
                                 backgroundColor:
                                 Colors.grey[300],
                                 minHeight: 8,

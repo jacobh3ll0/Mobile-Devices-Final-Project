@@ -270,7 +270,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: Colors.deepOrange,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28.0),
@@ -325,7 +325,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                           ElevatedButton(
                             onPressed: () => _openSetGoalDialog(goalType, index),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple,
+                              backgroundColor: Colors.deepOrange,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(28.0),
@@ -337,7 +337,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                           ElevatedButton(
                             onPressed: () => _deleteGoal(index),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.grey,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(28.0),
@@ -358,7 +358,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddGoalDialog,
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28.0),

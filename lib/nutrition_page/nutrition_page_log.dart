@@ -247,7 +247,7 @@ class _NutritionPageLogState extends State<NutritionPageLog> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple,
+                              backgroundColor: Colors.deepOrange,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(28.0),
