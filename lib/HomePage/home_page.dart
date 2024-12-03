@@ -1,7 +1,7 @@
 import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -57,7 +57,7 @@ class HomePageState extends State<HomePage>
     }
     catch (e) //If it fails to grab the users data, output debug.
         {
-      print("FAILED TO GRAB THE USERS DATA: $e");
+      log("FAILED TO GRAB THE USERS DATA: $e");
     }
   }
 
@@ -75,9 +75,6 @@ class HomePageState extends State<HomePage>
 
   Future<void> fetchCalendarData() async {
     List<String> keys = await manager.getKeysForGroupedByDay();
-    for(var item in keys) {
-      // log("date: $item");
-    }
     daysWorkedOut = keys;
   }
 
@@ -85,8 +82,8 @@ class HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context)
   {
-    User? user = FirebaseAuth.instance.currentUser; //Gets the current user information from the FireBase (Could be null in case of error)
-    String UserEmail = user != null ? '${user.email}' : 'User not found'; //Set either user Email, or null (if error)
+    // User? user = FirebaseAuth.instance.currentUser; //Gets the current user information from the FireBase (Could be null in case of error)
+    // String UserEmail = user != null ? '${user.email}' : 'User not found'; //Set either user Email, or null (if error)
 
     return Scaffold(
       appBar: AppBar(
@@ -156,7 +153,7 @@ Widget buildAlignHomePage()
   return Align(
       alignment: Alignment.topLeft,
       child: Padding(
-        padding: EdgeInsets.all(14),
+        padding: const EdgeInsets.all(14),
         child: buildColumnHomePage(),
       )
   );
@@ -180,7 +177,7 @@ Widget buildContainerMainModule()
   return Container(
     width: double.infinity,
     height: 200,
-    padding: EdgeInsets.all(8.0),
+    padding: const EdgeInsets.all(8.0),
     decoration: BoxDecoration(
       color: Colors.red,
       borderRadius: BorderRadius.circular(12.0),
@@ -215,7 +212,7 @@ Widget buildPositionedMainModuleRight()
 Widget buildConstrainedBoxRank()
 {
   return ConstrainedBox(
-    constraints: BoxConstraints(
+    constraints: const BoxConstraints(
       maxWidth: 250,
     ),
     child: buildIconButtonRank(),
@@ -229,9 +226,7 @@ Widget buildIconButtonRank()
     // icon: Icon(Icons.add),
     icon: Image.asset('Assets/Images/Ranks/dumbbell.png'),
     // icon: Image.asset('Assets/Images/Ranks/Diamond_3_Rank.png'),
-    onPressed: (){
-      print("object");
-    },
+    onPressed: (){},
   );
 }
 
@@ -270,7 +265,7 @@ Widget buildColumnMainModule()
 Widget buildConstrainedBoxRankQuote()
 {
   return ConstrainedBox(
-      constraints: BoxConstraints(
+      constraints: const BoxConstraints(
       maxWidth: 250,
       ),
     child: buildTextQuote(),
@@ -308,7 +303,7 @@ Widget buildTextQuote()
 
 Widget buildContainerSecondModule()
 {
-  return Container(
+  return SizedBox(
     height: 100.0, // Set a fixed height for the blue container
     child: buildRowSecondModule(),
   );
@@ -319,7 +314,7 @@ Widget buildRowSecondModule()
   return Row(
     children: [
       buildExpandedCalendar(),
-      SizedBox(width: 8,),
+      const SizedBox(width: 8,),
       buildExpandedStreak()
     ],
   );
@@ -412,7 +407,6 @@ String calcTOD(int time)
 String getTime()
 {
   final dt = DateTime.now();
-  final dt24 = DateFormat('HH:mm').format(dt);
   final hour = dt.hour.toString().padLeft(2,'0');
   final min = dt.minute.toString().padLeft(2,'0');
   final inttime = int.parse('$hour$min');
@@ -445,44 +439,44 @@ Widget buildContainerIconOutline(Function buildIconButtonProfile)
   );
 }
 
-Widget buildContainerThemeOutline()
-{
-  return Container(
-    decoration: BoxDecoration(
-      border: Border.all(
-        color: Colors.black,
-        width: 2.0,
-      ),
-      borderRadius: BorderRadius.circular(100.0),
-    ),
-    child: buildPopupMenuTheme(),
-  );
-}
-
-
-Widget buildPopupMenuTheme() {
-  return PopupMenuButton<int>(
-    icon: Icon(Icons.brush),
-    onSelected: (value) {
-      if (value == 1) {
-        print("Option 1 Selected");
-      } else if (value == 2) {
-        print("Option 2 Selected");
-      }
-    },
-    itemBuilder: (context) =>
-    [
-      PopupMenuItem(
-        value: 1,
-        child: Text("Light"),
-      ),
-      PopupMenuItem(
-        value: 2,
-        child: Text("Dark"),
-      )
-    ],
-  );
-}
+// Widget buildContainerThemeOutline()
+// {
+//   return Container(
+//     decoration: BoxDecoration(
+//       border: Border.all(
+//         color: Colors.black,
+//         width: 2.0,
+//       ),
+//       borderRadius: BorderRadius.circular(100.0),
+//     ),
+//     child: buildPopupMenuTheme(),
+//   );
+// }
+//
+//
+// Widget buildPopupMenuTheme() {
+//   return PopupMenuButton<int>(
+//     icon: const Icon(Icons.brush),
+//     onSelected: (value) {
+//       if (value == 1) {
+//         print("Option 1 Selected");
+//       } else if (value == 2) {
+//         print("Option 2 Selected");
+//       }
+//     },
+//     itemBuilder: (context) =>
+//     [
+//       const PopupMenuItem(
+//         value: 1,
+//         child: Text("Light"),
+//       ),
+//       const PopupMenuItem(
+//         value: 2,
+//         child: Text("Dark"),
+//       )
+//     ],
+//   );
+// }
 
 Widget buildColumnGreeting()
 {
@@ -502,13 +496,13 @@ Widget buildTextUsername()
 
 Widget buildSizedBoxVertical()
 {
-  return SizedBox(height: 16.0);
+  return const SizedBox(height: 16.0);
 }
 
 
 Widget buildSizedBoxHorizontal()
 {
-  return SizedBox(width: 8);
+  return const SizedBox(width: 8);
 }
 
 TextStyle timeStyle()
@@ -641,10 +635,10 @@ Widget buildIconCalendar(DateTime dateTimeIndex)
     DateTime current = DateTime.parse(currentDay);
 
     if(today == current) {
-      return Icon(Icons.fiber_manual_record, color: Colors.black,);
+      return const Icon(Icons.fiber_manual_record, color: Colors.black,);
     }
   }
-  return Icon(Icons.circle_outlined, color: Colors.black);
+  return const Icon(Icons.circle_outlined, color: Colors.black);
 }
 
 TextStyle dayofweekStyle()

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -18,11 +20,13 @@ const Map<String, String> allAvailableGoals = {
 
 // Stateful widget to manage and display user goals.
 class NutritionPageGoals extends StatefulWidget {
+  const NutritionPageGoals({super.key});
+
   @override
-  _NutritionPageGoalsState createState() => _NutritionPageGoalsState();
+  NutritionPageGoalsState createState() => NutritionPageGoalsState();
 }
 
-class _NutritionPageGoalsState extends State<NutritionPageGoals> {
+class NutritionPageGoalsState extends State<NutritionPageGoals> {
   final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -150,7 +154,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
         );
       }
     } catch (error) {
-      print("Error updating goal: $error");
+      log("Error updating goal: $error");
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to update goal. Please try again.'))
       );
@@ -194,7 +198,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
         );
       }
     } catch (error) {
-      print("Error deleting goal: $error");
+      log("Error deleting goal: $error");
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to delete goal.'))
       );
@@ -265,7 +269,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: const Text('Please enter a valid number', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],)
+                      SnackBar(content: const Text('Please enter a valid number', style: TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],)
                   );
                 }
               },

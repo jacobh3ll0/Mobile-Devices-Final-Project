@@ -8,11 +8,11 @@ class NutritionPageLogAddFood extends StatefulWidget {
   const NutritionPageLogAddFood({super.key, required this.selectedFoods});
 
   @override
-  _NutritionPageLogAddFoodState createState() =>
-      _NutritionPageLogAddFoodState();
+  NutritionPageLogAddFoodState createState() =>
+      NutritionPageLogAddFoodState();
 }
 
-class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
+class NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<Map<String, String>> availableFoods = [];
@@ -105,7 +105,7 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
         fiberController.text.isEmpty ||
         sugarController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Please fill in all required fields.', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
+        SnackBar(content: const Text('Please fill in all required fields.', style: TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
       );
       return;
     }
@@ -324,12 +324,14 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
         availableFoods.removeAt(index);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Food deleted successfully', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
+          SnackBar(content: const Text('Food deleted successfully', style: TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
       );
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to delete food.'))
-      );
+      if(mounted)
+      {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to delete food.')));
+      }
     }
   }
 
@@ -360,7 +362,7 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: const Text('Please enter a valid serving size', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
+                    SnackBar(content: const Text('Please enter a valid serving size', style: TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
                   );
                 }
               },

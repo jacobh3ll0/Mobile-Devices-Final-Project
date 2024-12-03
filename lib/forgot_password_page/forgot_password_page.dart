@@ -5,6 +5,8 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
 {
   final TextEditingController _emailController = TextEditingController();
 
+  ForgotPasswordPage({super.key});
+
   Future<void> _resetPassword(BuildContext context) async //Function that defines password resets
   {
     try
@@ -14,7 +16,7 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
 
       //Show that the email was successfully sent via the snackbar on the login page
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Password reset email sent if the account exists. Check your inbox!"),
           backgroundColor: Colors.green, //Set success color to green
         ),
@@ -37,7 +39,7 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
   Widget build(BuildContext context) //Defines the forgot password screen layout
   {
     return Scaffold(
-      appBar: AppBar(title: Text('Forgot Password')),
+      appBar: AppBar(title: const Text('Forgot Password')),
       body: Padding(
         padding: const EdgeInsets.only(top: 32.0), //Padding to top for aesthetics
         child: Align(
@@ -45,25 +47,25 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 400), //Set a max height
+              constraints: const BoxConstraints(maxWidth: 400), //Set a max height
               child: Column(
                 children: [
 
                   //Explanation text
-                  Text(
+                  const Text(
                     'Enter account email. If the account exists, a password reset email will be sent!',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
                   ),
 
 
-                  SizedBox(height: 25), //For ascetics
+                  const SizedBox(height: 25), //For ascetics
 
                   //Email field definition
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
                       enabledBorder: OutlineInputBorder(
@@ -83,7 +85,7 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
 
 
 
-                  SizedBox(height: 25), //For Ascetics
+                  const SizedBox(height: 25), //For Ascetics
 
                   //Define the button
                   ElevatedButton(
@@ -98,7 +100,7 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
                       {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text('You must input an email!'), //Output error
                             backgroundColor: Colors.red,
                           ),
@@ -106,7 +108,7 @@ class ForgotPasswordPage extends StatelessWidget //Handles password resets (Usin
                       }
 
                     },
-                    child: Text('Reset Password'),
+                    child: const Text('Reset Password'),
                   ),
                 ],
               ),

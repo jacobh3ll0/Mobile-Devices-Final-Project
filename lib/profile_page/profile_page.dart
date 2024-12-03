@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'NavigateToSettingsPage.dart';
+import 'navigate_to_settings_page.dart';
 
 class ProfilePage extends StatefulWidget
 {
@@ -177,7 +177,7 @@ class ProfilePageState extends State<ProfilePage>
 
               Center(
                 child: ElevatedButton(
-                  onPressed: () {_buildSettingsPage();}, // Logout callback
+                  onPressed: () {_buildSettingsPage(context);}, // Logout callback
                   child: const Text('Settings'),
                 ),
               ),
@@ -196,9 +196,9 @@ class ProfilePageState extends State<ProfilePage>
     );
   }
 
-  _buildSettingsPage() async
+  _buildSettingsPage(BuildContext context) async
   {
-    final result = await Navigator.push( //returns a Grade object
+    await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => const SettingsPage(),

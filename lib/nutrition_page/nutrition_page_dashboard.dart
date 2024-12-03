@@ -7,10 +7,10 @@ class NutritionPageDashboard extends StatefulWidget {
   const NutritionPageDashboard({super.key});
 
   @override
-  _NutritionPageDashboardState createState() => _NutritionPageDashboardState();
+  NutritionPageDashboardState createState() => NutritionPageDashboardState();
 }
 
-class _NutritionPageDashboardState extends State<NutritionPageDashboard> {
+class NutritionPageDashboardState extends State<NutritionPageDashboard> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Map<String, dynamic> goals = {};
   Map<String, Map<String, num>> weeklyLogs = {}; // Holds logs per day per goal

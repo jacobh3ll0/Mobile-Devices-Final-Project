@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SessionManager
 {
-  final storage = FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
 
   Future<bool> isLoggedIn() async //Checks if the user has a login token
   {

@@ -77,9 +77,13 @@ class _CreateNewWorkoutPageState extends State<CreateNewWorkoutPage> {
                 items: _muscleGroups.map((group) {
                   return DropdownMenuItem(
                     value: group,
-                    child: Text(group),
+                    child: Container(
+                      color: Colors.white, // Ensures the background is opaque
+                      child: Text(group, style: const TextStyle(color: Colors.black)),
+                    ),
                   );
                 }).toList(),
+
                 onChanged: (value) {
                   setState(() {
                     _selectedMuscleGroup = value;

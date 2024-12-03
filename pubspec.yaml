@@ -48,6 +48,10 @@ dependencies:
   flutter_animate: ^2.0.0
   permission_handler: ^11.3.1
 
+  # local database dependencies
+  sqflite:
+  path:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,9 +75,7 @@ dev_dependencies:
 
   location:
 
-  # local database dependencies
-  sqflite:
-  path:
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

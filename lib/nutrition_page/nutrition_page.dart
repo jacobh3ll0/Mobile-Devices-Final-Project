@@ -22,10 +22,10 @@ class NutritionPage extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
-            const NutritionPageDashboard(),
-            const NutritionPageLog(),
+            NutritionPageDashboard(),
+            NutritionPageLog(),
             NutritionPageGoals(),
           ],
         ),

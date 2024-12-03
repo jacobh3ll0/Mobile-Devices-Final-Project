@@ -1,6 +1,5 @@
 // -- Flutter/dart packages -- //
 
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -150,7 +149,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
   //list of pages
   late final List<Widget> _pages = [
     HomePage(navigateToHomePageCallback: _setNavigationToProfilePage,),
-    NutritionPage(),
+    const NutritionPage(),
     const WorkoutPage(),
     const SocialPage(),
     ProfilePage(logoutCallback: widget.logoutUser), //Passes logout functionality to profile

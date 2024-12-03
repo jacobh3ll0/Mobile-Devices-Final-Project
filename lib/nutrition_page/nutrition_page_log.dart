@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,10 +11,10 @@ class NutritionPageLog extends StatefulWidget {
   const NutritionPageLog({super.key});
 
   @override
-  _NutritionPageLogState createState() => _NutritionPageLogState();
+  NutritionPageLogState createState() => NutritionPageLogState();
 }
 
-class _NutritionPageLogState extends State<NutritionPageLog> {
+class NutritionPageLogState extends State<NutritionPageLog> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   DateTime selectedDate = DateTime.now();
 
@@ -126,7 +128,7 @@ class _NutritionPageLogState extends State<NutritionPageLog> {
         SnackBar(content: Text('$mealType updated successfully', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
       );
     } catch (error) {
-      print("Error updating meal: $error");
+      log("Error updating meal: $error");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to update meal. Please try again.', style: TextStyle(color: Colors.white),), backgroundColor: Colors.red,),
       );
