@@ -10,14 +10,14 @@ import 'dart:io' show Platform;
 class LoginPage extends StatefulWidget //Handles user authentication (login) using FireBase - W/ Redirects for forgot password and signup
     {
   final Function(String) loginUser; //Get function to handle successful login during app launch
-  LoginPage({required this.loginUser});
+  const LoginPage({super.key, required this.loginUser});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 
 }
 
-  class _LoginPageState extends State<LoginPage> {
+  class LoginPageState extends State<LoginPage> {
     final _emailController = TextEditingController();
     final _passwordController = TextEditingController();
 
@@ -50,7 +50,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
 
     await _notificationsPlugin.initialize(initializationSettings);
   }
@@ -78,7 +78,6 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
       }
       catch (e)
       {
-        print("Error checking user profile completeness: $e"); //Should not happen, left as debug
         return false; //Return false if an error occurs
       }
     }
@@ -99,7 +98,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
       else
         {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Your account contains errors ... Contact the application developer'), //Error message
               backgroundColor: Colors.red, //Set color red
             ),
@@ -149,7 +148,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
   Widget build(BuildContext context) //Defines the login page
   {
     return Scaffold(
-      appBar: AppBar(title: Text("Fitness Application Login"), automaticallyImplyLeading: false),
+      appBar: AppBar(title: const Text("Fitness Application Login"), automaticallyImplyLeading: false),
       body: Column(
         children: [
 
@@ -162,7 +161,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                 //Some random image I found online (Copyright free)
                 'https://img.freepik.com/premium-vector/vintage-fitness-logotype-with-strong-man-hand-holding-fiery-dumbbell_153969-6.jpg?w=740',
                 fit: BoxFit.contain, //Fit image within padding constraints
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.error), //If the image fails to load, show error icon.
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.error), //If the image fails to load, show error icon.
               ),
             ),
           ),
@@ -179,7 +178,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                   //Handles username field
                   TextField(
                     controller: _emailController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Email',
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
@@ -196,13 +195,13 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                     ),
                   ),
 
-                  SizedBox(height: 16), //Spacing for atheistics
+                  const SizedBox(height: 16), //Spacing for atheistics
 
                  //Handles password field
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Password',
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
@@ -220,7 +219,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                   ),
 
 
-                  SizedBox(height: 35),
+                  const SizedBox(height: 35),
 
                   //Defines the login button
                   SizedBox(
@@ -237,7 +236,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                           {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar( //Output error
-                              SnackBar(
+                              const SnackBar(
                                 content: Text('You must input and email and a password!'),
                                 backgroundColor: Colors.red,
                               ),
@@ -248,7 +247,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                         backgroundColor: Colors.purple, //Set background colour
                         foregroundColor: Colors.white, //Set text colour
                       ),
-                      child: Text('Login'),
+                      child: const Text('Login'),
                     ),
                   ),
                 ],
@@ -271,7 +270,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                       MaterialPageRoute(builder: (context) => ForgotPasswordPage()), //Send to forgot password form
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Forgot Password?',
                     style: TextStyle(decoration: TextDecoration.none),
                   ),
@@ -286,7 +285,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
                       MaterialPageRoute(builder: (context) => SignUpPage()), //Send to sign up form
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Sign Up',
                     style: TextStyle(decoration: TextDecoration.none),
                   ),

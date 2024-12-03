@@ -67,7 +67,7 @@ class ReplyPageState extends State<ReplyPage> {
       {
     final replyText = _replyController.text;
 
-    if (replyText.isNotEmpty) //Make sure reply isnt empty
+    if (replyText.isNotEmpty) //Make sure reply is not empty
         {
       try {
         //Add the reply data to the firebase
@@ -139,7 +139,7 @@ class ReplyPageState extends State<ReplyPage> {
             //Text input for reply
             TextField(
               controller: _replyController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Your reply',
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(

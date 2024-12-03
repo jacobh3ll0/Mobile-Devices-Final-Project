@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class SignupProfilePreferencesPage extends StatefulWidget
 {
+  const SignupProfilePreferencesPage({super.key});
+
   @override
-  _SignupProfilePreferencesPageState createState() => _SignupProfilePreferencesPageState();
+  SignupProfilePreferencesPageState createState() => SignupProfilePreferencesPageState();
 }
 
 //Class to locally adjust profile settings such as theme
-class _SignupProfilePreferencesPageState extends State<SignupProfilePreferencesPage>
+class SignupProfilePreferencesPageState extends State<SignupProfilePreferencesPage>
 {
   String? _selectedTheme; //Store the selected theme (dark or light)
 
@@ -18,7 +20,7 @@ class _SignupProfilePreferencesPageState extends State<SignupProfilePreferencesP
     //App bar definition
     return Scaffold(
       appBar: AppBar(
-        title: Text('Setup your preferences'),
+        title: const Text('Setup your preferences'),
         automaticallyImplyLeading: false, //Dont allow arrow back
       ),
 
@@ -30,12 +32,12 @@ class _SignupProfilePreferencesPageState extends State<SignupProfilePreferencesP
           children: [
 
             //Text for title regarding theme for app
-            Text(
+            const Text(
               "App Theme",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
 
-            SizedBox(height: 10), //Spacing for aesthetics
+            const SizedBox(height: 10), //Spacing for aesthetics
 
             //Definition for the actual radio buttons regarding theme
             Row(
@@ -51,11 +53,11 @@ class _SignupProfilePreferencesPageState extends State<SignupProfilePreferencesP
                         });
                       },
                     ),
-                    Text('Light'),
+                    const Text('Light'),
                   ],
                 ),
 
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
 
                 Row(
                   children: [
@@ -69,13 +71,13 @@ class _SignupProfilePreferencesPageState extends State<SignupProfilePreferencesP
                         });
                       },
                     ),
-                    Text('Dark'),
+                    const Text('Dark'),
                   ],
                 ),
               ],
             ),
 
-            SizedBox(height: 70), //Spacing for aesthetics
+            const SizedBox(height: 70), //Spacing for aesthetics
 
             //Create the account button definition
             Center(
@@ -88,7 +90,7 @@ class _SignupProfilePreferencesPageState extends State<SignupProfilePreferencesP
                       if(_selectedTheme != null)
                         {
                           ScaffoldMessenger.of(context).showSnackBar( //Output success in snackbar for login page
-                            SnackBar(
+                            const SnackBar(
                               content: Text('Account Successfully Created!'),
                               backgroundColor: Colors.green,
                             ),
@@ -99,14 +101,14 @@ class _SignupProfilePreferencesPageState extends State<SignupProfilePreferencesP
                       else //If fields are missing, put error in snackbar
                         {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text('All required selections must be made!'),
                               backgroundColor: Colors.red,
                             ),
                           );
                         }
                     },
-                    child: Text("Create My Account!"),
+                    child: const Text("Create My Account!"),
                   ),
                 ],
               ),

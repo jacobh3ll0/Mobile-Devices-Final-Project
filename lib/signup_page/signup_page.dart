@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'profile_creation_page.dart';
@@ -10,6 +9,8 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  SignUpPage({super.key});
+
 
   Future<bool> _signUp(BuildContext context) async //Function to handle a signup attempt
   {
@@ -17,13 +18,13 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
     try //Try inputted information
     {
 
-      //Create the user account, and get the usercredential
+      //Create the user account, and get the user credential
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text.trim().toLowerCase(), password: _passwordController.text.trim().toLowerCase());
 
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProfileCreationPage(uid: userCredential.user!.uid), //Navigate to the profile creation with the usercredential
+          builder: (context) => ProfileCreationPage(uid: userCredential.user!.uid), //Navigate to the profile creation with the user credential
         ),
       );
 
@@ -75,7 +76,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
   Widget build(BuildContext context) //Defines the signup page
   {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign Up')),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: Padding(
         padding: const EdgeInsets.only(top: 32.0), //Pad the top for aesthetics
         child: Align(
@@ -87,7 +88,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                 //First email box definition
                 TextField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
@@ -105,12 +106,12 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                   ),
                 ),
 
-                SizedBox(height: 30), //For aesthetics
+                const SizedBox(height: 30), //For aesthetics
 
                 //Confirm email definition
                 TextField(
                   controller: _confirmEmailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Confirm Email',
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
@@ -128,13 +129,13 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                   ),
                 ),
 
-                SizedBox(height: 30), //For aesthetics
+                const SizedBox(height: 30), //For aesthetics
 
                 //Password field definition
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
@@ -152,13 +153,13 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                   ),
                 ),
 
-                SizedBox(height: 30), //For aesthetics
+                const SizedBox(height: 30), //For aesthetics
 
                 //Confirm password field definition
                 TextField(
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Confirm Password',
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
@@ -176,7 +177,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                   ),
                 ),
 
-                SizedBox(height: 50), //For aesthetics
+                const SizedBox(height: 50), //For aesthetics
 
                 //Button at the bottom to proceed to profile creation
                 ElevatedButton(
@@ -191,7 +192,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                       if (_emailController.text.trim().toLowerCase() != _confirmEmailController.text.trim().toLowerCase())
                       {
                         ScaffoldMessenger.of(context).showSnackBar( //Output error
-                          SnackBar(
+                          const SnackBar(
                             content: Text('Your emails MUST match'),
                             backgroundColor: Colors.red,
                           ),
@@ -201,7 +202,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                       else if (_passwordController.text != _confirmPasswordController.text)
                       {
                         ScaffoldMessenger.of(context).showSnackBar( //Output error
-                          SnackBar(
+                          const SnackBar(
                             content: Text('Your passwords MUST match!'),
                             backgroundColor: Colors.red,
                           ),
@@ -214,7 +215,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                           {
                             ScaffoldMessenger.of(context).showSnackBar( //Output error if not
                               // Output error
-                              SnackBar(
+                              const SnackBar(
                                 content: Text('Not a valid email!'),
                                 backgroundColor: Colors.red,
                               ),
@@ -225,7 +226,7 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                           {
                             ScaffoldMessenger.of(context).showSnackBar( //Output error message
                               // Output error
-                              SnackBar(
+                              const SnackBar(
                                 content: Text('Password MUST be between 6 to 30 characters'),
                                 backgroundColor: Colors.red,
                               ),
@@ -248,14 +249,14 @@ class SignUpPage extends StatelessWidget //Handles first level of user sign up (
                     {
                       ScaffoldMessenger.of(context).showSnackBar(
                         // Output error
-                        SnackBar(
+                        const SnackBar(
                           content: Text('All fields are required!'),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
                   },
-                  child: Text('Proceed to profile creation!'),
+                  child: const Text('Proceed to profile creation!'),
                 ),
               ],
             ),
