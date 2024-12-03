@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/services.dart';
 
 // -- our packages -- //
 import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
@@ -27,7 +28,10 @@ void main() async
 {
   WidgetsFlutterBinding.ensureInitialized(); //Ensures flutter binding initialized
   await Firebase.initializeApp(); //Initialize the firebase
-  runApp(const FitnessApp());
+
+  //lock the device in portrait mode
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((value) => runApp(const FitnessApp()));
 }
 
 class FitnessApp extends StatelessWidget {

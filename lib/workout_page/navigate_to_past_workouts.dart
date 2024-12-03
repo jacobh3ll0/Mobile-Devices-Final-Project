@@ -1,6 +1,7 @@
+//flutter packages
 import 'package:flutter/material.dart';
-import 'package:md_final/workout_page/active_workout_firebase_display.dart';
-import 'package:md_final/workout_page/build_bottom_app_bar_workout_page.dart';
+
+//my packages
 import 'package:md_final/workout_page/create_new_workout_page.dart';
 import 'package:md_final/workout_page/firestore_manager.dart';
 import 'package:md_final/workout_page/workout_data_model.dart';
@@ -68,7 +69,6 @@ class _NavigateToPastWorkoutsState extends State<NavigateToPastWorkouts> {
         child: const Icon(Icons.add),
       ),
     );
-
   }
 
   Widget _buildIndividualWorkout(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot,
@@ -83,7 +83,6 @@ class _NavigateToPastWorkoutsState extends State<NavigateToPastWorkouts> {
           children: _buildExpansionTileChildren(userWorkout, snapshot, index, context, manager)
       ),
     );
-
   }
 
   List<Widget> _buildExpansionTileChildren(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot, int index, BuildContext context, FirestoreManager manager) {
@@ -120,7 +119,6 @@ class _NavigateToPastWorkoutsState extends State<NavigateToPastWorkouts> {
                       });
                       manager.deleteWorkoutById(workout.reference!.id);
                       _showSnackBar(context, '${workout.workoutName} deleted');
-
                     },
                     icon: const Icon(Icons.delete, color: Colors.red),
                   ),
@@ -132,7 +130,6 @@ class _NavigateToPastWorkoutsState extends State<NavigateToPastWorkouts> {
       );
     }
     return returnWidgets;
-
   }
 
   void _showSnackBar(BuildContext context, String message) {
