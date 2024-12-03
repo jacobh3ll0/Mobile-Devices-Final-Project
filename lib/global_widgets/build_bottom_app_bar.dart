@@ -46,13 +46,12 @@ class _BuildBottomNavigationBarState extends State<BuildBottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-
     return BottomNavigationBar(
       currentIndex: widget.getIndex(),
       onTap: (index) {
         _onIconPress(index);
       },
-      selectedItemColor: Theme.of(context).primaryColor,
+      selectedItemColor: Theme.of(context).colorScheme.error,
       showSelectedLabels: true,
       unselectedItemColor: Colors.black,
 

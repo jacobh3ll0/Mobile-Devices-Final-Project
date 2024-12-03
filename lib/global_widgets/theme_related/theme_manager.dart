@@ -10,13 +10,13 @@ class ThemeManager {
 
     // colour information for main theme
     colorScheme: ColorScheme.fromSwatch(
-      primarySwatch: Colors.purple,
-      accentColor: Colors.blue,
-      backgroundColor: Colors.grey,
+      primarySwatch: Colors.red,
+      accentColor: Colors.orangeAccent,
+      backgroundColor: Colors.white,
       brightness: Brightness.light,
     ),
 
-    canvasColor: Colors.grey, // controls colour of navigation bar
+    canvasColor: Colors.white24, // controls colour of navigation bar
   );
 
     static ThemeData darkTheme = ThemeData(
@@ -25,11 +25,15 @@ class ThemeManager {
       // ChatGPT generated dark theme because I suck at UI
       // Color scheme for the dark theme
       colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: Colors.deepPurple, // Base color for primary UI elements
-        accentColor: Colors.teal, // Accent color for highlights
+        primarySwatch: Colors.deepOrange, // Base color for primary UI elements
+        accentColor: Colors.deepOrangeAccent, // Accent color for highlights
         backgroundColor: Colors.black, // Background color for screens
-        brightness: Brightness.dark, // Ensures the theme is dark
+        brightness: Brightness.dark,
+        errorColor: Colors.white
+
+        // Ensures the theme is dark
       ),
+
 
       // Additional properties for dark theme
       scaffoldBackgroundColor: const Color(0xFF121212), // Typical dark mode background

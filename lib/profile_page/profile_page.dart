@@ -83,7 +83,8 @@ class ProfilePageState extends State<ProfilePage>
                 radius: 50,
                   //Check for background picture as null value. and if so, just display the person icon in the circle avatar
                   backgroundColor: Colors.white,
-                  backgroundImage: userData!['profileImageURL'] != null &&
+                  backgroundImage: userData != null &&
+                      userData!['profileImageURL'] != null &&
                       userData!['profileImageURL'].toString().isNotEmpty
                       ? NetworkImage(userData!['profileImageURL'])
                       : null,

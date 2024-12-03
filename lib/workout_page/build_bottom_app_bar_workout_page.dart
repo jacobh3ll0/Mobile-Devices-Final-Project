@@ -1,7 +1,8 @@
+//flutter packages
 import 'package:flutter/material.dart';
-import 'package:md_final/workout_page/firestore_manager.dart';
-import 'package:md_final/workout_page/navigate_to_past_workouts.dart';
 
+//my packages
+import 'package:md_final/workout_page/navigate_to_past_workouts.dart';
 import 'create_new_workout_page.dart';
 
 class BuildBottomAppBarWorkoutPage extends StatelessWidget {
@@ -16,30 +17,29 @@ class BuildBottomAppBarWorkoutPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ElevatedButton(onPressed: () {
-            Navigator.push( //returns a Grade object
+            Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NavigateToPastWorkouts(),
+                  builder: (context) => const NavigateToPastWorkouts(),
                 )
             );
-          }, child: Text("View Past Workouts")),
+          }, child: const Text("View Past Workouts")),
           ElevatedButton(
               onPressed: () async {
-                final result = await Navigator.push( //returns a Grade object
+                final result = await Navigator.push( //returns a WorkoutDataModel object
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CreateNewWorkoutPage(),
                     )
                 );
-                if(result != null) {
+                if(result != null) { //update ui with new element
                   firestoreCallback(result);
                 }
               },
-              child: Icon(Icons.add)),
+              child: const Icon(Icons.add)),
 
         ],
       ),
     );
   }
-
 }

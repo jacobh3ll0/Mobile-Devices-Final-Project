@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/services.dart';
 
 // -- our packages -- //
 import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
@@ -27,7 +28,10 @@ void main() async
 {
   WidgetsFlutterBinding.ensureInitialized(); //Ensures flutter binding initialized
   await Firebase.initializeApp(); //Initialize the firebase
-  runApp(const FitnessApp());
+
+  //lock the device in portrait mode
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((value) => runApp(const FitnessApp()));
 }
 
 class FitnessApp extends StatelessWidget {
@@ -145,7 +149,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
 
   //list of pages
   late final List<Widget> _pages = [
-    const HomePage(),
+    HomePage(navigateToHomePageCallback: _setNavigationToProfilePage,),
     NutritionPage(),
     const WorkoutPage(),
     const SocialPage(),
@@ -166,11 +170,18 @@ class _HomeNavigatorState extends State<HomeNavigator> {
   void _onNavigationButtonTap(int index) {
     setState(() {
       _currentPageIndex = index;
+      // updateIcon();
     });
   }
 
   int _getCurrentSelectedIndex() {
     return _currentPageIndex;
+  }
+
+  void _setNavigationToProfilePage() {
+    setState(() {
+      _currentPageIndex = 4;
+    });
   }
 
 }

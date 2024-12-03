@@ -1,20 +1,27 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:geocoding/geocoding.dart';
+// import 'package:latlong2/latlong.dart';
+// import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:gif/gif.dart';
+
+import 'package:md_final/workout_page/firestore_manager.dart';
+// import 'package:flutter_animate/flutter_animate.dart';
+// import 'package:gif/gif.dart';
+// import 'Assets/Main_Themes.dart';
+// import 'Assets/Rank_Themes.dart';
 
 class HomePage extends StatefulWidget
 {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.navigateToHomePageCallback});
+
+  final Function navigateToHomePageCallback;
 
   @override
   HomePageState createState() => HomePageState();
@@ -24,12 +31,15 @@ class HomePageState extends State<HomePage>
 {
   Map<String, dynamic>? userData; //Map to store the fetched user data from DB
   String currentUser = "";
+  FirestoreManager manager = FirestoreManager();
+  late List<String> daysWorkedOut = [];
 
   @override
   void initState()
   {
-    super.initState();
     fetchUserData(); //Gets the users name, really inefficient, however funcitonal for now
+    fetchCalendarData();
+    super.initState();
   }
 
   Future<void> fetchUserData() async //Function to handle retrieving the user data
@@ -61,6 +71,26 @@ class HomePageState extends State<HomePage>
     }
   }
 
+  bool didWorkout(currentDay)
+  {
+    if (daysWorkedOut.contains(currentDay))
+      {
+        return true;
+      }
+    else
+      {
+        return false;
+      }
+  }
+
+  Future<void> fetchCalendarData() async {
+    List<String> keys = await manager.getKeysForGroupedByDay();
+    for(var item in keys) {
+      log("date: $item");
+    }
+    daysWorkedOut = keys;
+  }
+
   // const HomePage({super.key});
   @override
   Widget build(BuildContext context)
@@ -72,9 +102,9 @@ class HomePageState extends State<HomePage>
       appBar: AppBar(
           backgroundColor: Colors.grey,
           leading: Padding(
-          padding: const EdgeInsets.fromLTRB(8,0,0,8),
-          child: buildContainerIconOutline(),
-        ),
+            padding: const EdgeInsets.fromLTRB(8,0,0,8),
+            child: buildContainerIconOutline(buildIconButtonProfile),
+          ),
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.fromLTRB(0,0,0,8),
@@ -90,7 +120,34 @@ class HomePageState extends State<HomePage>
           buildStackHomePage()
     );
   }
-}
+
+  Widget buildIconButtonProfile()
+  {
+    return GestureDetector(
+      onTap: () {
+        widget.navigateToHomePageCallback();
+      },
+      child: CircleAvatar(
+        radius: 50,
+        backgroundImage: userData != null &&
+            userData?['profileImageURL'] != null &&
+            userData!['profileImageURL'].toString().isNotEmpty
+            ? NetworkImage(userData?['profileImageURL'])
+            : null,
+        child: userData == null ||
+            userData?['profileImageURL'] == null ||
+            userData!['profileImageURL'].toString().isEmpty
+            ? const Icon(
+          Icons.person,
+          size: 40,
+          color: Colors.grey, // Change background color of default profile picture for aesthetics
+        )
+            : null,
+      ),
+
+    );
+  }
+
 
 Widget buildStackHomePage()
 {
@@ -142,7 +199,7 @@ Widget buildContainerMainModule()
     height: 200,
     padding: EdgeInsets.all(8.0),
     decoration: BoxDecoration(
-      color: Colors.purpleAccent,
+      color: Colors.red,
       borderRadius: BorderRadius.circular(12.0),
     ),
     child: buildStackMainModule(),
@@ -187,7 +244,8 @@ Widget buildIconButtonRank()
 {
   return IconButton(
     // icon: Icon(Icons.add),
-    icon: Image.asset('Assets/Images/Ranks/Diamond_3_Rank.png'),
+    icon: Image.asset('Assets/Images/Ranks/dumbbell.png'),
+    // icon: Image.asset('Assets/Images/Ranks/Diamond_3_Rank.png'),
     onPressed: (){
       print("object");
     },
@@ -214,17 +272,17 @@ Widget buildColumnMainModule()
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisAlignment: MainAxisAlignment.end,
     children: [
-      buildTextRank(),
+      // buildTextRank(),
       buildSizedBoxVertical(),
       buildConstrainedBoxRankQuote()
     ],
   );
 }
 
-Widget buildTextRank()
-{
-  return Text('DIAMOND', style: rankStyle());
-}
+// Widget buildTextRank()
+// {
+//   return Text('DIAMOND', style: rankStyle());
+// }
 
 Widget buildConstrainedBoxRankQuote()
 {
@@ -291,41 +349,40 @@ Widget buildExpandedCalender()
       child: buildContainerCalender());
 }
 
-Widget buildContainerCalender()
-{
-  return Container(
-      height: double.infinity,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Text('Calender')
-  );
-}
+
+  Widget buildContainerStreak()
+  {
+
+    int streak = 0;
+    for(var date in daysWorkedOut) {
+      streak++;
+    }
+
+    return Container(
+        padding: const EdgeInsets.all(2.0),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.orangeAccent,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const FittedBox(
+                child: Icon(Icons.local_fire_department, size: 5000,),
+              ),
+              Text("$streak", style: streakStyle(),),
+            ]
+        )
+    );
+  }
+
 
 Widget buildExpandedStreak()
 {
   return Expanded(
-      flex: 1,
-      child: buildContainerStreak());
-}
-
-Widget buildContainerStreak()
-{
-  return Container(
-      padding: EdgeInsets.all(16.0),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.orangeAccent,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: IconButton(
-          onPressed: (){
-            print("object");
-          },
-          icon: Icon(Icons.local_fire_department))
-  );
+    flex: 1,
+    child: buildContainerStreak());
 }
 
 
@@ -336,7 +393,6 @@ Widget buildTextTime()
       style: timeStyle()
   );
 }
-
 
 String calcTOD(int time)
 {
@@ -356,7 +412,6 @@ String calcTOD(int time)
   {
     return "Good Night,";
   }
-
 }
 
 String getTime()
@@ -367,10 +422,8 @@ String getTime()
   final min = dt.minute.toString().padLeft(2,'0');
   final inttime = int.parse('$hour$min');
   return calcTOD(inttime);
+
 }
-
-
-
 
 Future<Map<String, dynamic>> getQuote() async
 {
@@ -380,12 +433,9 @@ Future<Map<String, dynamic>> getQuote() async
   List<dynamic> parsedQuote = jsonDecode(quoteData);
   Map<String, dynamic> quoteObject = parsedQuote[0];
   return quoteObject;
-
 }
 
-
-
-Widget buildContainerIconOutline()
+Widget buildContainerIconOutline(Function buildIconButtonProfile)
 {
   return Container(
     decoration: BoxDecoration(
@@ -394,23 +444,12 @@ Widget buildContainerIconOutline()
           width: 2.0,
         ),
       borderRadius: BorderRadius.circular(100.0),
-  ),
-    child: buildIconButtonProfile(),
+  ), child: Center(
+      child: buildIconButtonProfile(),
+    ),
   );
 }
 
-Widget buildIconButtonProfile()
-{
-  return IconButton(
-    icon: Image.asset('Assets/Images/profile.PNG'),
-    iconSize: 32.0,
-    onPressed: (){
-      print("object");
-    },
-  );
-
-
-}
 Widget buildContainerThemeOutline()
 {
   return Container(
@@ -418,27 +457,37 @@ Widget buildContainerThemeOutline()
       border: Border.all(
         color: Colors.black,
         width: 2.0,
-
       ),
       borderRadius: BorderRadius.circular(100.0),
     ),
-    child: buildIconButtonTheme(),
+    child: buildPopupMenuTheme(),
   );
 }
 
-Widget buildIconButtonTheme()
-{
-  return IconButton(
-      icon: Icon(Icons.settings),
-      onPressed: () {
-        print("Image Button Pressed");
-      },
-  iconSize: 30.0, // Customize the icon size
-  color: Colors.black); // Customize the icon color);
+
+Widget buildPopupMenuTheme() {
+  return PopupMenuButton<int>(
+    icon: Icon(Icons.brush),
+    onSelected: (value) {
+      if (value == 1) {
+        print("Option 1 Selected");
+      } else if (value == 2) {
+        print("Option 2 Selected");
+      }
+    },
+    itemBuilder: (context) =>
+    [
+      PopupMenuItem(
+        value: 1,
+        child: Text("Light"),
+      ),
+      PopupMenuItem(
+        value: 2,
+        child: Text("Dark"),
+      )
+    ],
+  );
 }
-
-
-
 
 Widget buildColumnGreeting()
 {
@@ -473,7 +522,6 @@ TextStyle timeStyle()
     fontSize: 18,
     fontWeight: FontWeight.bold,
     color: Colors.black, // Text color
-
   );
 }
 
@@ -509,6 +557,104 @@ TextStyle quoteStyle()
     ]
   );
 }
+
+TextStyle streakStyle()
+{
+  return const TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+      shadows: [
+        Shadow(
+            offset: Offset(2.0, 2.0),
+            blurRadius: 3.0,
+            color: Colors.black
+        )
+      ]
+  );
+}
+
+Widget buildContainerCalender()
+{
+  return Container(
+      height: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.redAccent,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: buildListViewCalender()
+  );
+}
+
+Widget buildListViewCalender()
+{
+  List<String> daysOfWeek = [
+    "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+  ];
+  return ListView.builder(
+    scrollDirection: Axis.horizontal,
+    itemCount: 7,
+    itemBuilder: (context, index)
+    {
+      return buildContainerCalenderDay(daysOfWeek, index);
+      },
+    );
+}
+
+
+Widget buildContainerCalenderDay(List<String> daysOfWeek, int index)
+{
+  return Padding(
+    padding: const EdgeInsets.all(5.0),
+    child: Container(
+      alignment: Alignment.center,
+      color: Colors.white,
+      child: buildWrapCalender(daysOfWeek, index),
+    ),
+  );
+}
+
+Widget buildWrapCalender(List<String> daysOfWeek, int index)
+{
+  return Wrap(
+    crossAxisAlignment: WrapCrossAlignment.center,
+    direction: Axis.vertical,
+    children: [
+      buildIconCalender(),
+      buildSizedBoxVertical(),
+      Text(daysOfWeek[index], style: dayofweekStyle()),
+      Text(DateTime.now().subtract(Duration(days: index - 4)).day.toString())
+    ],
+  );
+}
+
+Widget buildIconCalender()
+{
+  return Icon(Icons.fiber_manual_record);
+}
+
+// Bool didWorkout(int index,)
+// {
+//   String todayDate = DateTime.now().subtract(Duration(days: index - 4)).day.toString();
+//   return
+// }
+
+TextStyle dayofweekStyle()
+{
+  return const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+
+  );
+}
+
+}
+
+
+
+
 
 
 

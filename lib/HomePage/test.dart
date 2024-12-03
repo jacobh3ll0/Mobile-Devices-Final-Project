@@ -1,52 +1,69 @@
 import 'package:flutter/material.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SplashScreen(),
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Simulating a delay for initialization
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    });
-  }
-
+class EqualSizedBoxesWithListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(), // Loading indicator
+        child: Container(
+          height: 100, // Define the height of the red container
+          width: double.infinity, // Make the container take the full width
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal, // Horizontal scrolling
+            itemCount: 7, // 7 items for 7 days
+            itemBuilder: (context, index) {
+              return Container(
+                width: (MediaQuery.of(context).size.width / 7) - 8, // Divide screen width into 7
+                margin: EdgeInsets.all(4.0), // Add spacing between purple squares
+                decoration: BoxDecoration(
+                  color: Colors.purple,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.circle, color: Colors.black),
+                    SizedBox(height: 4.0), // Space between icon and text
+                    Text(
+                      getDayName(index),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 2.0), // Space between day and number
+                    Text(
+                      getDayNumber(index).toString(),
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
-}
 
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Home Page')),
-      body: Center(child: Text('Welcome to the Home Page!')),
-    );
+  // Helper function to get day names
+  String getDayName(int index) {
+    List<String> days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"];
+    return days[index];
+  }
+
+  // Helper function to get day numbers (mock values for this example)
+  int getDayNumber(int index) {
+    return [6, 5, 4, 3, 2, 1, 30][index];
   }
 }
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    home: EqualSizedBoxesWithListView(),
+  ));
 }
