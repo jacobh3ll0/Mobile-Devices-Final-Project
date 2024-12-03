@@ -270,7 +270,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28.0),
@@ -287,7 +287,6 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           const Padding(
@@ -325,7 +324,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                           ElevatedButton(
                             onPressed: () => _openSetGoalDialog(goalType, index),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple,
+                              backgroundColor: Colors.red,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(28.0),
@@ -337,7 +336,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                           ElevatedButton(
                             onPressed: () => _deleteGoal(index),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.black,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(28.0),
@@ -358,7 +357,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddGoalDialog,
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28.0),

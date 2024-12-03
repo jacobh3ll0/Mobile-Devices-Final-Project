@@ -146,7 +146,6 @@ class _NutritionPageLogState extends State<NutritionPageLog> {
     String formattedDate = DateFormat('EEE, MMM d').format(selectedDate);
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           Row(
@@ -247,7 +246,7 @@ class _NutritionPageLogState extends State<NutritionPageLog> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.purple,
+                              backgroundColor: Colors.red,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(28.0),

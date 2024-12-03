@@ -313,7 +313,6 @@ class _NutritionPageDashboardState extends State<NutritionPageDashboard> {
     final formattedDate = DateFormat('EEE, MMM d').format(selectedDate);
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           Row(
