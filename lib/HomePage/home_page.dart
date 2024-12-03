@@ -354,8 +354,22 @@ Widget buildExpandedCalender()
   {
 
     int streak = 0;
-    for(var date in daysWorkedOut) {
-      streak++;
+    for(String date in daysWorkedOut) {
+      // log("date: $date, s: $streak");
+      DateTime time = DateTime.now();
+      String stringToday = "${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')}";
+      DateTime today = DateTime.parse(stringToday);
+
+      DateTime currentDay = DateTime.parse(date);
+
+      log("today: $today, currentday: $currentDay, bool: ${today.subtract(Duration(days: streak)) == currentDay}");
+
+      if(today.subtract(Duration(days: streak)) == currentDay) {
+        streak++;
+      } else {
+        break;
+      }
+
     }
 
     return Container(
@@ -502,7 +516,7 @@ Widget buildColumnGreeting()
 
 Widget buildTextUsername()
 {
-  return Text('USER', style: usernameStyle());
+  return Text(currentUser, style: usernameStyle());
 }
 
 Widget buildSizedBoxVertical()
