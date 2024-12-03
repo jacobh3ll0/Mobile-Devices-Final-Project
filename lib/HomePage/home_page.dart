@@ -143,19 +143,12 @@ Widget buildStackHomePage()
 {
   return Stack(
     children: [
-      buildPositionBackground(),
       buildAlignHomePage()
     ],
   );
 }
 
-Widget buildPositionBackground()
-{
-  return Positioned.fill(
-      child: Container(
-      color: Colors.white54,
-  ));
-}
+
 
 
 Widget buildAlignHomePage()
@@ -606,12 +599,18 @@ Widget buildListViewCalendar()
 
 Widget buildContainerCalendarDay(List<String> daysOfWeek, int index)
 {
-
   return Padding(
     padding: const EdgeInsets.all(5.0),
     child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: Colors.black,
+          width: 2.0,
+        ),
+        borderRadius: BorderRadius.circular(100.0),
+      ),
       alignment: Alignment.center,
-      color: Colors.white,
       child: buildWrapCalendar(daysOfWeek, index),
     ),
   );
@@ -625,8 +624,8 @@ Widget buildWrapCalendar(List<String> daysOfWeek, int index)
     children: [
       buildIconCalendar(DateTime.now().add(Duration(days: index - 5))),
       buildSizedBoxVertical(),
-      Text(daysOfWeek[(DateTime.now().add(Duration(days: index - 5)).weekday - 1) % 7]),
-      Text(DateTime.now().add(Duration(days: index - 5)).day.toString()),
+      Text(daysOfWeek[(DateTime.now().add(Duration(days: index - 5)).weekday - 1) % 7], style: dayofweekStyle()),
+      Text(DateTime.now().add(Duration(days: index - 5)).day.toString(), style: dayofweekStyle()),
     ],
   );
 }
@@ -642,16 +641,16 @@ Widget buildIconCalendar(DateTime dateTimeIndex)
     DateTime current = DateTime.parse(currentDay);
 
     if(today == current) {
-      return Icon(Icons.fiber_manual_record);
+      return Icon(Icons.fiber_manual_record, color: Colors.black,);
     }
   }
-  return Icon(Icons.circle_outlined);
+  return Icon(Icons.circle_outlined, color: Colors.black);
 }
 
 TextStyle dayofweekStyle()
 {
   return const TextStyle(
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: FontWeight.bold,
       color: Colors.black,
 

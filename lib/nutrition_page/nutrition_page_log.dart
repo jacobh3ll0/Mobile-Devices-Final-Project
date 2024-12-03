@@ -146,7 +146,6 @@ class _NutritionPageLogState extends State<NutritionPageLog> {
     String formattedDate = DateFormat('EEE, MMM d').format(selectedDate);
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           Row(

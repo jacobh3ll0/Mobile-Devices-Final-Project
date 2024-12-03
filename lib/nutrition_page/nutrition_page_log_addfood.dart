@@ -478,7 +478,6 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
       appBar: AppBar(
         title: const Text("Add Food"),
       ),
-      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           Expanded(

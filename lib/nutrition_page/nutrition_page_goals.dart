@@ -287,7 +287,6 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           const Padding(
