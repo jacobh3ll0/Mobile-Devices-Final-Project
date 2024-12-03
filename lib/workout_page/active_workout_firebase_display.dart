@@ -124,95 +124,144 @@ class _FirebaseFetcherState extends State<FirebaseFetcher> {
   Widget _buildIndividualWorkout(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot,
       int index, BuildContext context, FirestoreManager manager) {
     return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ExpansionTile(
-          title: Text(userWorkout[0].workoutName,),
-          enableFeedback: true,
-          // subtitle: Text('Muscle Group: ${userWorkout.muscleGroup}'),
-          children: _buildExpansionTileChildren(userWorkout, snapshot, index, context, manager)
+        leading: Icon(Icons.fitness_center, color: Theme.of(context).colorScheme.primary),
+        title: Text(
+          userWorkout[0].workoutName,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        subtitle: Text(
+          "Total Sets: ${userWorkout.length}",
+          style: const TextStyle(color: Colors.blueGrey),
+        ),
+        children: _buildExpansionTileChildren(
+          userWorkout,
+          snapshot,
+          index,
+          context,
+          manager,
+        ),
       ),
     );
   }
 
-  List<Widget> _buildExpansionTileChildren(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot, int index, BuildContext context, FirestoreManager manager) {
+  List<Widget> _buildExpansionTileChildren(List<WorkoutDataModel> userWorkout, AsyncSnapshot<List<List<WorkoutDataModel>>> snapshot,
+      int index, BuildContext context, FirestoreManager manager,) {
     List<Widget> returnWidgets = [];
 
-    for(var workout in userWorkout) { //TODO remove debug cards
-      //lbs and edit button, reps and edit button, checkbox
-      //TODO
-      returnWidgets.add(const Align(alignment: Alignment.centerLeft, child: Text("Reps:")));
-      for(int i = 0; i < workout.reps.length; i++) {
-        // returnWidgets.add(Text("Reps: ${workout.reps[i]}, Weight: ${workout.weight[i]}"));
-        returnWidgets.add(ListTile(
-          title: Text("${workout.reps[i]}"),
-          leading: Checkbox(
-            value: true, onChanged: (bool? value) {},
-          ),
-        ));
-      }
-      returnWidgets.add(ListTile(
-          title: const Text("new set?"),
-          leading: Checkbox(
-            value: false, onChanged: (bool? value) async {
-              var userInput = await showNumberDialog(context);
-              if(userInput != null) {
-                log("$userInput");
-                //add to firebase and update UI
-                setState(() {
-                  workout.reps.add(double.parse(userInput["intNumber"].toString()).toInt());
-                  workout.weight.add(userInput["floatNumber"]!);
+    for (var workout in userWorkout) {
 
-                  log("editing workout: $workout");
-
-                  manager.editGrade(workout.reference!.id, workout);
-                });
-              }
-          },
-      )));
-
+      returnWidgets.add(
+          buildRepsAndWeightsGrid(workout.reps, workout.weight)
+      );
 
       returnWidgets.add(
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Debug Data:', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text('Weight: ${workout.weight} lbs'),
-              Text('Reps: ${workout.reps}'),
-              Text('Date: ${workout.time.toLocal().toString().split(' ')[0]}'),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: () {
-
-                    },
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        snapshot.data?.removeAt(index); //remove widget from tree
-                      });
-                      manager.deleteWorkoutById(workout.reference!.id);
-                      _showSnackBar(context, '${workout.workoutName} deleted');
-
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                  ),
-                ],
+              ElevatedButton.icon(
+                onPressed: () async {
+                  var userInput = await showNumberDialog(context);
+                  if (userInput != null) {
+                    setState(() {
+                      workout.reps.add(double.parse(userInput["intNumber"].toString()).toInt());
+                      workout.weight.add(userInput["floatNumber"]!);
+                      manager.editGrade(workout.reference!.id, workout);
+                    });
+                  }
+                },
+                icon: const Icon(Icons.add),
+                label: const Text("Add Set"),
               ),
+              IconButton(onPressed: () {
+                setState(() {
+                  snapshot.data?.removeAt(index); //remove widget from tree
+                });
+                manager.deleteWorkoutById(workout.reference!.id);
+                _showSnackBar(context, '${workout.workoutName} deleted');
+                }, icon: const Icon(Icons.delete, color: Colors.redAccent,))
             ],
           ),
         ),
       );
     }
+
     return returnWidgets;
   }
+
+  Widget buildRepsAndWeightsGrid(List<int> reps, List<double> weights) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+      ),
+      itemCount: reps.length,
+      itemBuilder: (context, index) {
+        return Card(
+          elevation: 3,
+          margin: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Set ${index + 1}", style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text("Reps: ${reps[index]}"),
+              Text("Weight: ${weights[index]} lbs"),
+            ],
+          ),
+        );
+      },
+    );
+
+    GridView.count(
+      primary: false,
+      padding: const EdgeInsets.all(20),
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+      crossAxisCount: 2,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.teal[100],
+          child: const Text("He'd have you all unravel at the"),
+        ),
+        Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.teal[200],
+          child: const Text('Heed not the rabble'),
+        ),
+        Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.teal[300],
+          child: const Text('Sound of screams but the'),
+        ),
+        Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.teal[400],
+          child: const Text('Who scream'),
+        ),
+        Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.teal[500],
+          child: const Text('Revolution is coming...'),
+        ),
+        Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.teal[600],
+          child: const Text('Revolution, they...'),
+        ),
+      ],
+    );
+  }
+
+
+
 
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context) // show snack bar
