@@ -1,6 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+// Definition of all available goals with their measurement units.
+const Map<String, String> allAvailableGoals = {
+  'Calories': 'cal',
+  'Protein': 'g',
+  'Fat': 'g',
+  'Carbs': 'g',
+  'Fiber': 'g',
+  'Saturated Fat': 'g',
+  'Cholesterol': 'mg',
+  'Sugar': 'g',
+  'Sodium': 'mg',
+};
+
+// Stateful widget to manage and display user goals.
 class NutritionPageGoals extends StatefulWidget {
   @override
   _NutritionPageGoalsState createState() => _NutritionPageGoalsState();
@@ -8,22 +24,15 @@ class NutritionPageGoals extends StatefulWidget {
 
 class _NutritionPageGoalsState extends State<NutritionPageGoals> {
   final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // State to manage goals and available goals.
   List<Map<String, String>> goals = [];
-  Map<String, String> availableGoals = {
-    'Calories': 'cal',
-    'Protein': 'g',
-    'Fat': 'g',
-    'Carbs': 'g',
-    'Fiber': 'g',
-    'Saturated Fat': 'g',
-    'Cholesterol': 'mg',
-    'Sugar': 'g',
-    'Sodium': 'mg',
-  };
+  Map<String, String> availableGoals = {...allAvailableGoals};
 
   final TextEditingController goalController = TextEditingController();
 
+  // Initial setup for fetching goals and initializing notifications.
   @override
   void initState() {
     super.initState();
@@ -31,76 +40,181 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
     _initializeNotifications();
   }
 
+  // Setup for local notifications.
   void _initializeNotifications() async {
-    const AndroidInitializationSettings androidInitializationSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings = InitializationSettings(android: androidInitializationSettings);
+    const AndroidInitializationSettings androidInitializationSettings =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+    InitializationSettings(android: androidInitializationSettings);
     await _notificationsPlugin.initialize(initializationSettings);
   }
 
+  // Send a local notification.
   Future<void> _sendNotification(String title, String body) async {
-    const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidNotificationDetails =
+    AndroidNotificationDetails(
       'goals_channel',
       'Goals Notifications',
       channelDescription: 'Notifications for goals creation and updates',
       importance: Importance.high,
       priority: Priority.high,
     );
-    const NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
+    const NotificationDetails notificationDetails =
+    NotificationDetails(android: androidNotificationDetails);
     await _notificationsPlugin.show(0, title, body, notificationDetails);
   }
 
-  void _fetchGoals() {
-    goals = [
-      {'type': 'Calories', 'value': '2000 cal'},
-      {'type': 'Protein', 'value': '150 g'},
-      {'type': 'Fat', 'value': '70 g'},
-    ];
-    for (var goal in goals) {
-      availableGoals.remove(goal['type']);
+  // Fetch goals from Firestore.
+  void _fetchGoals() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      try {
+        final snapshot = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('goals')
+            .get();
+        setState(() {
+          goals = snapshot.docs.map((doc) => {
+            'type': doc.data()['type'] as String,
+            'value': doc.data()['value'] as String,
+          }).toList();
+
+          // Remove already set goals from available options.
+          for (var goal in goals) {
+            availableGoals.remove(goal['type']);
+          }
+        });
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to load goals. Please try again.'))
+        );
+      }
     }
-    setState(() {});
   }
 
+  // Add a new goal to Firestore.
   void _addGoal(String goalType, String value) {
-    setState(() {
-      goals.add({'type': goalType, 'value': "$value${availableGoals[goalType]}"});
-      availableGoals.remove(goalType);
-    });
-    _sendNotification(
-      "New $goalType Goal",
-      "You have set a new $goalType goal: $value${availableGoals[goalType]}.",
-    );
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final goal = {'type': goalType, 'value': '$value${allAvailableGoals[goalType]!}'};
+      _firestore.collection('users').doc(userId).collection('goals').add(goal).then((_) {
+        setState(() {
+          goals.add(goal);
+          availableGoals.remove(goalType);
+        });
+        _sendNotification(
+            "New $goalType Goal",
+            "You have set a new $goalType goal: $value${allAvailableGoals[goalType]}."
+        );
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to add goal. Please try again.'))
+        );
+      });
+    }
   }
 
-  void _updateGoal(int index, String value) {
-    final String unit = availableGoals[goals[index]['type']] ?? '';
-    setState(() {
-      goals[index]['value'] = "$value$unit";
-    });
-    _sendNotification(
-      "${goals[index]['type']} Goal Changed",
-      "Your ${goals[index]['type']} goal is now $value$unit.",
-    );
+  // Update an existing goal in Firestore.
+  void _updateGoal(int index, String value) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+
+    final goalType = goals[index]['type']!;
+    final unit = allAvailableGoals[goalType]!;
+
+    try {
+      final querySnapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('goals')
+          .where('type', isEqualTo: goalType)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docId = querySnapshot.docs.first.id;
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('goals')
+            .doc(docId)
+            .update({'value': "$value$unit"});
+
+        setState(() {
+          goals[index]['value'] = "$value$unit";
+        });
+
+        _sendNotification(
+            "${goals[index]['type']} Goal Changed",
+            "Your ${goals[index]['type']} goal is now $value$unit."
+        );
+      }
+    } catch (error) {
+      print("Error updating goal: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update goal. Please try again.'))
+      );
+    }
   }
 
-  void _deleteGoal(int index) {
+  // Delete a goal from Firestore.
+  void _deleteGoal(int index) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+
     final goal = goals[index];
-    setState(() {
-      availableGoals[goal['type']!] = goal['value']!.replaceAll(RegExp(r'\d+'), '');
-      goals.removeAt(index);
-    });
-    _sendNotification(
-      "Removed ${goal['type']} Goal",
-      "You have removed the ${goal['type']} goal.",
-    );
+    try {
+      final goalType = goal['type']!;
+
+      final querySnapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('goals')
+          .where('type', isEqualTo: goalType)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docId = querySnapshot.docs.first.id;
+
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('goals')
+            .doc(docId)
+            .delete();
+
+        setState(() {
+          goals.removeAt(index);
+          availableGoals[goalType] = allAvailableGoals[goalType]!;
+        });
+
+        _sendNotification(
+            "Removed $goalType Goal",
+            "You have removed the $goalType goal."
+        );
+      }
+    } catch (error) {
+      print("Error deleting goal: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete goal.'))
+      );
+    }
   }
 
+  // Display a dialog to add new goals.
   void _openAddGoalDialog() {
+    if (availableGoals.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('All goals have been set.'))
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add New Goal"),
+          title: const Text("Add New Goal"),
           content: SingleChildScrollView(
             child: Column(
               children: availableGoals.keys.map((goalType) {
@@ -119,6 +233,7 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
     );
   }
 
+  // Display a dialog to set or update goals.
   void _openSetGoalDialog(String goalType, [int? index]) {
     goalController.text = index != null
         ? goals[index]['value']?.replaceAll(RegExp(r'\D+'), '') ?? ''
@@ -127,12 +242,12 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Set Goal for $goalType"),
+          title: Text(index == null ? "Set Goal for $goalType" : "Change Goal for $goalType"),
           content: TextField(
             controller: goalController,
             decoration: InputDecoration(
               labelText: "Enter $goalType goal",
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.number,
           ),
@@ -146,20 +261,22 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
                   } else {
                     _updateGoal(index, enteredValue);
                   }
+                  goalController.clear();
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please enter a valid number')),
+                      SnackBar(content: const Text('Please enter a valid number', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],)
                   );
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue,
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28.0),
                 ),
               ),
-              child: Text("Submit"),
+              child: const Text("Submit"),
             ),
           ],
         );
@@ -171,56 +288,82 @@ class _NutritionPageGoalsState extends State<NutritionPageGoals> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      body: ListView.builder(
-        itemCount: goals.length,
-        itemBuilder: (context, index) {
-          final goal = goals[index];
-          return Card(
-            elevation: 4.0,
-            margin: const EdgeInsets.all(8.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
+      body: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [],
             ),
-            child: ListTile(
-              title: Text(goal['type'] ?? ""),
-              subtitle: Text(goal['value'] ?? ""),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _openSetGoalDialog(goal['type'] ?? "", index),
-                    child: Text("Change"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightBlue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28.0),
+          ),
+          Expanded(
+            child: goals.isEmpty
+                ? const Center(child: Text("No goals set"))
+                : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ListView.separated(
+                itemCount: goals.length,
+                itemBuilder: (context, index) {
+                  final goalType = goals[index]['type']!;
+                  final goalValue = goals[index]['value']!;
+                  return Card(
+                    elevation: 4.0,
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        goalType,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(goalValue),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => _openSetGoalDialog(goalType, index),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.purple,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28.0),
+                              ),
+                            ),
+                            child: const Text("Change"),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () => _deleteGoal(index),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28.0),
+                              ),
+                            ),
+                            child: const Text("Delete"),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () => _deleteGoal(index),
-                    child: Text("Delete"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28.0),
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
+                separatorBuilder: (context, index) => const SizedBox(height: 4.0),
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddGoalDialog,
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.purple,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28.0),
         ),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

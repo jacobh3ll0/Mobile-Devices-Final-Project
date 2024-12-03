@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NutritionPageLogAddFood extends StatefulWidget {
   final List<Map<String, String>> selectedFoods;
 
-  NutritionPageLogAddFood({required this.selectedFoods});
+  const NutritionPageLogAddFood({super.key, required this.selectedFoods});
 
   @override
   _NutritionPageLogAddFoodState createState() =>
@@ -30,48 +31,144 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
   final TextEditingController fiberController = TextEditingController();
   final TextEditingController sugarController = TextEditingController();
 
+  List<String> units = ['g', 'ml'];
+  String selectedUnit = 'g';
+
   @override
   void initState() {
     super.initState();
     selectedFoods = List.from(widget.selectedFoods);
+    selectedUnit = units.first;
     _fetchAvailableFoods();
   }
 
   Future<void> _fetchAvailableFoods() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      return;
+    }
     try {
-      final snapshot = await _firestore.collection('foods').get();
+      final snapshot = await _firestore.collection('users')
+          .doc(userId)
+          .collection('foods')
+          .get();
       setState(() {
         availableFoods = snapshot.docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
+          final data = doc.data();
           return {
             'id': doc.id,
-            'name': data['name']?.toString() ?? '',
-            'brand': data['brand']?.toString() ?? '',
-            'serving': data['serving']?.toString() ?? '',
-            'calories': data['calories']?.toString() ?? '0',
-            'protein': data['protein']?.toString() ?? '0',
-            'fat': data['fat']?.toString() ?? '0',
-            'saturatedFat': data['saturatedFat']?.toString() ?? '0',
-            'cholesterol': data['cholesterol']?.toString() ?? '0',
-            'sodium': data['sodium']?.toString() ?? '0',
-            'carbohydrates': data['carbohydrates']?.toString() ?? '0',
-            'fiber': data['fiber']?.toString() ?? '0',
-            'sugar': data['sugar']?.toString() ?? '0',
+            'name': data['name'].toString(),
+            'brand': data['brand'].toString(),
+            'serving': data['serving'].toString(),
+            'unit': (data['unit'] != null && data['unit'].toString().isNotEmpty) ? data['unit'].toString() : 'g',
+            'calories': data['calories'].toString(),
+            'protein': data['protein'].toString(),
+            'fat': data['fat'].toString(),
+            'saturatedFat': data['saturatedFat'].toString(),
+            'cholesterol': data['cholesterol'].toString(),
+            'sodium': data['sodium'].toString(),
+            'carbohydrates': data['carbohydrates'].toString(),
+            'fiber': data['fiber'].toString(),
+            'sugar': data['sugar'].toString(),
           };
         }).toList();
       });
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load foods. Please try again.')),
+          const SnackBar(content: Text('Failed to load foods. Please try again.'))
       );
     }
   }
 
-  Future<void> _createFood() async {
-    final Map<String, String> food = {
+
+
+  Future<void> _createFood(String unit) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not authenticated.')),
+      );
+      return;
+    }
+
+    // Validate required fields
+    if (nameController.text.isEmpty ||
+        brandController.text.isEmpty ||
+        servingController.text.isEmpty ||
+        caloriesController.text.isEmpty ||
+        proteinController.text.isEmpty ||
+        fatController.text.isEmpty ||
+        saturatedFatController.text.isEmpty ||
+        cholesterolController.text.isEmpty ||
+        sodiumController.text.isEmpty ||
+        carbohydratesController.text.isEmpty ||
+        fiberController.text.isEmpty ||
+        sugarController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: const Text('Please fill in all required fields.', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
+      );
+      return;
+    }
+
+    // Validate numerical fields
+    List<String> numericalFields = [
+      'calories',
+      'protein',
+      'fat',
+      'saturatedFat',
+      'cholesterol',
+      'sodium',
+      'carbohydrates',
+      'fiber',
+      'sugar'
+    ];
+
+    for (String field in numericalFields) {
+      String value = '';
+      switch (field) {
+        case 'calories':
+          value = caloriesController.text;
+          break;
+        case 'protein':
+          value = proteinController.text;
+          break;
+        case 'fat':
+          value = fatController.text;
+          break;
+        case 'saturatedFat':
+          value = saturatedFatController.text;
+          break;
+        case 'cholesterol':
+          value = cholesterolController.text;
+          break;
+        case 'sodium':
+          value = sodiumController.text;
+          break;
+        case 'carbohydrates':
+          value = carbohydratesController.text;
+          break;
+        case 'fiber':
+          value = fiberController.text;
+          break;
+        case 'sugar':
+          value = sugarController.text;
+          break;
+        default:
+          break;
+      }
+      if (value.isNotEmpty && double.tryParse(value) == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please enter valid numbers for $field.')),
+        );
+        return;
+      }
+    }
+
+    final Map<String, String> newFood = {
       'name': nameController.text,
       'brand': brandController.text,
       'serving': servingController.text,
+      'unit': unit,
       'calories': caloriesController.text,
       'protein': proteinController.text,
       'fat': fatController.text,
@@ -83,27 +180,30 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
       'sugar': sugarController.text,
     };
 
-    Navigator.pop(context);
-
-    setState(() {
-      availableFoods.add(food);
-    });
-
-    _clearControllers();
-
     try {
-      final newFoodRef = await _firestore.collection('foods').add(food);
-      int index = availableFoods.indexOf(food);
-      availableFoods[index]['id'] = newFoodRef.id;
+      final newFoodRef = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('foods')
+          .add(newFood);
+      newFood['id'] = newFoodRef.id; // Add the Firebase-generated ID to the local map.
+
+      setState(() {
+        availableFoods.add(Map<String, String>.from(newFood));
+      });
+
+      Navigator.pop(context);
+      _clearControllers();
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create food in Firestore.'))
+        const SnackBar(content: Text('Failed to create food in Firestore.')),
       );
     }
   }
 
 
-  void _clearControllers() {
+
+  void _clearControllers(){
     nameController.clear();
     brandController.clear();
     servingController.clear();
@@ -119,39 +219,159 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
   }
 
   void _openCreateFoodDialog() {
+    // Initialize a local variable for unit selection within the dialog
+    String dialogSelectedUnit = selectedUnit;
+
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text("Create New Food"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildTextField(nameController, "Food Name"),
-                _buildTextField(brandController, "Brand"),
-                _buildTextField(servingController, "Serving"),
-                _buildTextField(caloriesController, "Calories"),
-                _buildTextField(proteinController, "Protein (g)"),
-                _buildTextField(fatController, "Fat (g)"),
-                _buildTextField(saturatedFatController, "Saturated Fat (g)"),
-                _buildTextField(cholesterolController, "Cholesterol (mg)"),
-                _buildTextField(sodiumController, "Sodium (mg)"),
-                _buildTextField(carbohydratesController, "Carbohydrates (g)"),
-                _buildTextField(fiberController, "Fiber (g)"),
-                _buildTextField(sugarController, "Sugar (g)"),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text("Create New Food"),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildTextField(nameController, "Food Name"),
+                    _buildTextField(brandController, "Brand"),
+                    _buildServingAndUnit(dialogSelectedUnit, (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          dialogSelectedUnit = newValue;
+                        });
+                      }
+                    }),
+                    _buildTextField(
+                      caloriesController,
+                      "Calories",
+                      keyboardType: TextInputType.number,
+                    ),
+                    _buildTextField(
+                      proteinController,
+                      "Protein (g)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    _buildTextField(
+                      fatController,
+                      "Fat (g)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    _buildTextField(
+                      saturatedFatController,
+                      "Saturated Fat (g)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    _buildTextField(
+                      cholesterolController,
+                      "Cholesterol (mg)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    _buildTextField(
+                      sodiumController,
+                      "Sodium (mg)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    _buildTextField(
+                      carbohydratesController,
+                      "Carbohydrates (g)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    _buildTextField(
+                      fiberController,
+                      "Fiber (g)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    _buildTextField(
+                      sugarController,
+                      "Sugar (g)",
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                  ],
+
+                ),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    // Update the main widget's selectedUnit to the dialog's selection
+                    setState(() {
+                      selectedUnit = dialogSelectedUnit;
+                    });
+                    _createFood(dialogSelectedUnit);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28.0),
+                    ),
+                  ),
+                  child: const Text("Submit"),
+                ),
               ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteFood(String foodId, int index) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    try {
+      await _firestore.collection('users').doc(userId).collection('foods').doc(foodId).delete();
+      setState(() {
+        availableFoods.removeAt(index);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: const Text('Food deleted successfully', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete food.'))
+      );
+    }
+  }
+
+
+  void _openEditFoodDialog(Map<String, String> food, int index) {
+    final TextEditingController servingController = TextEditingController(text: food['serving']);
+    String currentUnit = food['unit'] ?? 'g';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Serving Size'),
+          content: TextField(
+            controller: servingController,
+            decoration: InputDecoration(
+              labelText: 'Enter new serving size ($currentUnit)',
+              border: const OutlineInputBorder(),
             ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
           actions: [
             ElevatedButton(
-              onPressed: _createFood,
+              onPressed: () {
+                final newServingSize = servingController.text;
+                if (newServingSize.isNotEmpty && double.tryParse(newServingSize) != null) {
+                  _updateFoodServing(food, newServingSize, currentUnit, index);
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: const Text('Please enter a valid serving size', style: const TextStyle(color: Colors.black),), backgroundColor: Colors.grey[200],),
+                  );
+                }
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue,
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28.0),
                 ),
               ),
-              child: Text("Submit"),
+              child: const Text('Update'),
             ),
           ],
         );
@@ -159,24 +379,104 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label) {
+  void _updateFoodServing(Map<String, String> food, String newServingSize, String newUnit, int index) {
+    double newServing = double.tryParse(newServingSize) ?? 0.0;
+    double oldServing = double.tryParse(food['serving']!) ?? 1.0;
+    double ratio = newServing / oldServing;
+
+    // Update food details proportionally
+    food['serving'] = newServingSize;
+    food['calories'] = (double.parse(food['calories']!) * ratio).toStringAsFixed(0);
+    food['protein'] = (double.parse(food['protein']!) * ratio).toStringAsFixed(0);
+    food['fat'] = (double.parse(food['fat']!) * ratio).toStringAsFixed(0);
+    food['saturatedFat'] = (double.parse(food['saturatedFat']!) * ratio).toStringAsFixed(0);
+    food['cholesterol'] = (double.parse(food['cholesterol']!) * ratio).toStringAsFixed(0);
+    food['sodium'] = (double.parse(food['sodium']!) * ratio).toStringAsFixed(0);
+    food['carbohydrates'] = (double.parse(food['carbohydrates']!) * ratio).toStringAsFixed(0);
+    food['fiber'] = (double.parse(food['fiber']!) * ratio).toStringAsFixed(0);
+    food['sugar'] = (double.parse(food['sugar']!) * ratio).toStringAsFixed(0);
+
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    _firestore.collection('users').doc(userId).collection('foods').doc(food['id']).update(food)
+        .then((_) {
+      setState(() {
+        availableFoods[index] = Map<String, String>.from(food);  // Update local state
+      });
+    })
+        .catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update food in Firestore.'))
+      );
+    });
+  }
+
+
+  Widget _buildTextField(
+      TextEditingController controller,
+      String label, {
+        TextInputType keyboardType = TextInputType.text,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
+        keyboardType: keyboardType,
       ),
     );
   }
+
+  Widget _buildServingAndUnit(String currentUnit, Function(String?) onUnitChanged) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: TextField(
+            controller: servingController,
+            decoration: InputDecoration(
+              labelText: "Serving ($currentUnit)",
+              border: const OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          flex: 1,
+          child: DropdownButtonFormField<String>(
+            value: currentUnit,
+            decoration: const InputDecoration(
+              labelText: 'Unit',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: onUnitChanged,
+            dropdownColor: Colors.grey[200],
+            items: units.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                  style: const TextStyle(color: Colors.black),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Food"),
+        title: const Text("Add Food"),
       ),
       backgroundColor: Colors.grey[200],
       body: Column(
@@ -186,26 +486,45 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
                 ? Center(
               child: Text(
                 "No foods available.",
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 16, color: Colors.grey[400]),
               ),
             )
                 : ListView.builder(
               itemCount: availableFoods.length,
               itemBuilder: (context, index) {
                 final food = availableFoods[index];
-                return CheckboxListTile(
-                  title: Text(food['name'] ?? 'Unknown Food'),
-                  subtitle: Text(food['brand'] ?? 'Unknown Brand'),
-                  value: selectedFoods.contains(food),
-                  onChanged: (bool? selected) {
-                    setState(() {
-                      if (selected ?? false) {
-                        selectedFoods.add(food);
-                      } else {
-                        selectedFoods.remove(food);
-                      }
-                    });
+                return Dismissible(
+                  key: Key(food['id']!),
+                  background: Container(
+                    color: Colors.red,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.centerRight,
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (direction) {
+                    _deleteFood(food['id']!, index);
                   },
+                  child: InkWell(
+                    onLongPress: () {
+                      _openEditFoodDialog(food, index);
+                    },
+                    child: CheckboxListTile(
+                      title: Text('${food['name']} - ${food['brand']}'),
+                      subtitle: Text('Serving: ${food['serving']}${food['unit']}'), // Display unit correctly
+                      value: selectedFoods.contains(food),
+                      onChanged: (bool? selected) {
+                        setState(() {
+                          if (selected ?? false) {
+                            selectedFoods.add(food);
+                          } else {
+                            selectedFoods.remove(food);
+                          }
+                        });
+                      },
+                    ),
+
+
+                  ),
                 );
               },
             ),
@@ -218,22 +537,24 @@ class _NutritionPageLogAddFoodState extends State<NutritionPageLogAddFood> {
                 ElevatedButton(
                   onPressed: _openCreateFoodDialog,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
+                    backgroundColor: Colors.purple,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28.0),
                     ),
                   ),
-                  child: Text("Create Food"),
+                  child: const Text("Create Food"),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context, selectedFoods),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
+                    backgroundColor: Colors.purple,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28.0),
                     ),
                   ),
-                  child: Text("Submit"),
+                  child: const Text("Submit"),
                 ),
               ],
             ),
