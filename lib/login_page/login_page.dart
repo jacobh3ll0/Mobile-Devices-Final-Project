@@ -158,7 +158,7 @@ class LoginPage extends StatefulWidget //Handles user authentication (login) usi
   Widget build(BuildContext context) //Defines the login page
   {
     return Scaffold(
-      appBar: AppBar(title: const Text("Fitness Application Login"), automaticallyImplyLeading: false),
+      appBar: AppBar(title: const Text("Muscle Forge Login"), automaticallyImplyLeading: false),
       body: Column(
         children: [
 
