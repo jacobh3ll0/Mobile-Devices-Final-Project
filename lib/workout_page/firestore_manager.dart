@@ -30,8 +30,9 @@ class FirestoreManager {
       //extract time from the map
       DateTime time = userDataList[i].time;
 
-      //get current date
-      String mapKey = "${time.year}-${time.month}-${time.day}";
+      //padding so 2, is 02 because DateTime.parse() requires that
+      String mapKey = "${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')}";
+
       if(maps.containsKey(mapKey)) {
         maps[mapKey]?.add(userDataList[i]);
       } else {
@@ -40,7 +41,10 @@ class FirestoreManager {
       }
     }
 
-    return maps.keys.toList();
+    List<String> returnData = maps.keys.toList();
+    returnData.sort((a, b) => DateTime.parse(b).compareTo(DateTime.parse(a)));
+
+    return returnData;
   }
 
   Future<List<WorkoutDataModel>> getUserData(bool keepOnlyToday) async {
