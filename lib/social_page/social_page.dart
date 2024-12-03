@@ -15,10 +15,10 @@ class SocialPage extends StatefulWidget
   const SocialPage({super.key});
 
   @override
-  _SocialState createState() => _SocialState();
+  SocialState createState() => SocialState();
 }
 
-class _SocialState extends State<SocialPage>
+class SocialState extends State<SocialPage>
 {
   List<PostWidget> unsortedPosts = []; //List for posts
 
@@ -169,7 +169,7 @@ class _SocialState extends State<SocialPage>
             {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CreatePostPage()),
+                MaterialPageRoute(builder: (context) => const CreatePostPage()),
               );
 
               if (result != null && result is Map)

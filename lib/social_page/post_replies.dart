@@ -17,13 +17,13 @@ class PostRepliesPage extends StatefulWidget
       });
 
   @override
-  _PostRepliesPageState createState() => _PostRepliesPageState();
+  PostRepliesPageState createState() => PostRepliesPageState();
 }
 
-class _PostRepliesPageState extends State<PostRepliesPage>
+class PostRepliesPageState extends State<PostRepliesPage>
 {
   List<Map<String, dynamic>> replies = []; //Map of replies
-  bool isLoading = true; //Here for loading if it takes a while (Aetheics)
+  bool isLoading = true; //Here for loading if it takes a while (Aesthetics)
 
   @override
   void initState()

@@ -7,14 +7,14 @@ class ProfileCreationPage extends StatefulWidget
 {
   final String uid; //Get the users ID from the account creation page
 
-  ProfileCreationPage({super.key, required this.uid});
+  const ProfileCreationPage({super.key, required this.uid});
 
   @override
-  _ProfileCreationPageState createState() => _ProfileCreationPageState();
+  ProfileCreationPageState createState() => ProfileCreationPageState();
 }
 
 //This class handles creating the profile data
-class _ProfileCreationPageState extends State<ProfileCreationPage>
+class ProfileCreationPageState extends State<ProfileCreationPage>
 {
 
   final TextEditingController _displayNameController = TextEditingController();
@@ -26,7 +26,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
   String? _selectedGender; //stores answer for gender (default unselected/null)
 
 
-  Future<bool> SaveProfileData(BuildContext context) async
+  Future<bool> saveProfileData(BuildContext context) async
   {
     try
     {
@@ -40,8 +40,8 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
 
       if (existingUsers.docs.isNotEmpty) //If the user exists
       {
-        ScaffoldMessenger.of(context).showSnackBar( //Dispaly error
-          SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar( //Display error
+          const SnackBar(
             content: Text('Display name is already taken. Please choose another.'),
             backgroundColor: Colors.red,
           ),
@@ -63,7 +63,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
       //Move to the preferences page. and await until complete
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SignupProfilePreferencesPage()),
+        MaterialPageRoute(builder: (context) => const SignupProfilePreferencesPage()),
       );
 
       return true;
@@ -90,10 +90,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Enter Image URL'),
+        title: const Text('Enter Image URL'),
         content: TextField(
           controller: _imageURLController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Image URL', //Show text in box
             border: OutlineInputBorder(), //Border box unfocused
             enabledBorder: OutlineInputBorder(
@@ -115,7 +115,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
             onPressed: () {
               Navigator.pop(context); // Close dialog without changes
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: ()
@@ -126,7 +126,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
               });
               Navigator.pop(context); // Close dialog
             },
-            child: Text('Submit'),
+            child: const Text('Submit'),
           ),
         ],
       ),
@@ -138,7 +138,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
   {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create your profile'),
+        title: const Text('Create your profile'),
         automaticallyImplyLeading: false, //Prevent return arrow
       ),
       body: Padding(
@@ -170,36 +170,36 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                               _imageURLController.clear(); //Clear the controller
                             });
                             ScaffoldMessenger.of(context).showSnackBar( //Output error
-                              SnackBar(
+                              const SnackBar(
                                 content: Text('Image failed to load. Check your URL'),
                                 backgroundColor: Colors.red,
                               ),
                             );
                           });
-                          return Icon(Icons.person, size: 50, color: Colors.grey); //Show the person icon after error
+                          return const Icon(Icons.person, size: 50, color: Colors.grey); //Show the person icon after error
                         },
                       )
-                          : Icon(Icons.person, size: 50, color: Colors.grey), //The default icon on the circle avatar
+                          : const Icon(Icons.person, size: 50, color: Colors.grey), //The default icon on the circle avatar
                     ),
                   ),
 
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
                   //Change PFP button definition
                   ElevatedButton(
                     onPressed: _imageURLEntryDialog,
-                    child: Text('Insert a profile picture URL'),
+                    child: const Text('Insert a profile picture URL'),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: 30), //Spacing for aesthetics
+            const SizedBox(height: 30), //Spacing for aesthetics
 
             //Define input for displayName
             TextField(
               controller: _displayNameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Display Name',
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
@@ -217,13 +217,13 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
               ),
             ),
 
-            SizedBox(height: 20), //Spacing for aesthetics
+            const SizedBox(height: 20), //Spacing for aesthetics
 
             //Definition of the description
             TextField(
               controller: _descriptionController,
               maxLines: 4,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Description (Optional)',
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
@@ -241,10 +241,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
               ),
             ),
 
-            SizedBox(height: 30), //Spacing for aesthetics
+            const SizedBox(height: 30), //Spacing for aesthetics
 
             //Title text for the gender radio box.
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Gender",
@@ -252,7 +252,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
               ),
             ),
 
-            SizedBox(height: 10), //Spacing for aesthetics
+            const SizedBox(height: 10), //Spacing for aesthetics
 
             //Definition for the actual radio boxes
             Row(
@@ -269,11 +269,11 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                         });
                       },
                     ),
-                    Text('Male'),
+                    const Text('Male'),
                   ],
                 ),
 
-                SizedBox(width: 20), //Space them apart
+                const SizedBox(width: 20), //Space them apart
 
                 Row(
                   children: [
@@ -286,16 +286,16 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                         });
                       },
                     ),
-                    Text('Female'),
+                    const Text('Female'),
                   ],
                 ),
               ],
             ),
 
-            SizedBox(height: 30), //Spacing for aesthetics
+            const SizedBox(height: 30), //Spacing for aesthetics
 
             //Title text for the gym experience radio box
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Amount of Gym Experience",
@@ -303,10 +303,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
               ),
             ),
 
-            SizedBox(height: 10), //Spacing for aesthetics
+            const SizedBox(height: 10), //Spacing for aesthetics
 
 
-            //Definees the actual radiobox for the experience levels
+            //Defines the actual radio box for the experience levels
             Row(
               children: [
                 Row(
@@ -320,11 +320,11 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                         });
                       },
                     ),
-                    Text('Beginner'),
+                    const Text('Beginner'),
                   ],
                 ),
 
-                SizedBox(width: 20), //Space them apart
+                const SizedBox(width: 20), //Space them apart
 
                 Row(
                   children: [
@@ -337,11 +337,11 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                         });
                       },
                     ),
-                    Text('Intermediate'),
+                    const Text('Intermediate'),
                   ],
                 ),
 
-                SizedBox(width: 20), //Space them apart
+                const SizedBox(width: 20), //Space them apart
 
                 Row(
                   children: [
@@ -355,13 +355,13 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                         });
                       },
                     ),
-                    Text('Expert'),
+                    const Text('Expert'),
                   ],
                 ),
               ],
             ),
 
-            SizedBox(height: 30), //Spacing for aesthetics
+            const SizedBox(height: 30), //Spacing for aesthetics
 
             //Create Profile button definition
             Center(
@@ -371,7 +371,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                   //Make sure required values are filled
                 if (_displayNameController.text.isNotEmpty && _gymExperience != null && _selectedGender != null)
                   {
-                    bool profileCreationSuccess = await SaveProfileData(context); //Wait until the user data is saved to the database, and signup preferences is done
+                    bool profileCreationSuccess = await saveProfileData(context); //Wait until the user data is saved to the database, and signup preferences is done
 
                     if(profileCreationSuccess)
                       {
@@ -382,14 +382,14 @@ class _ProfileCreationPageState extends State<ProfileCreationPage>
                 else //Otherwise output an error
                   {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('All fields must be filled!'),
                         backgroundColor: Colors.red,
                       ),
                     );
                   }
                 },
-                child: Text('Create Profile'),
+                child: const Text('Create Profile'),
               ),
             ),
           ],

@@ -38,10 +38,10 @@ class PostWidget extends StatefulWidget //Class which defines required variables
   });
 
   @override
-  _PostWidgetState createState() => _PostWidgetState();
+  PostWidgetState createState() => PostWidgetState();
 }
 
-class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMixin //AutomaticKeepAliveClientMixin keeps all widgets active to prevent clearing
+class PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMixin //AutomaticKeepAliveClientMixin keeps all widgets active to prevent clearing
 {
   bool _isLiked = false; //sets default state for if post is liked
   late int _likesCount;
@@ -77,18 +77,18 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
       {
         //Display alert box with prompt
         return AlertDialog(
-          title: Text('Delete Post'),
-          content: Text('Are you sure you want to delete your post?'),
+          title: const Text('Delete Post'),
+          content: const Text('Are you sure you want to delete your post?'),
           actions: [
             TextButton( //Delete button definition
-              child: Text('Yes, delete my post'), //Delete button text
+              child: const Text('Yes, delete my post'), //Delete button text
               onPressed: () {
                 Navigator.of(context).pop();
                 widget.onDelete(widget); //Call the widget delete Function passed with each widget definition
               },
             ),
             TextButton( //Cancel button
-              child: Text('Cancel'), //Cancel button text
+              child: const Text('Cancel'), //Cancel button text
               onPressed: () {
                 Navigator.of(context).pop(); //Remove alert of navigation stack
               },
@@ -103,8 +103,10 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
   bool get wantKeepAlive => true; //Keep all widgets alive (To prevent stats from clearing on scroll)
 
   //Definition of widget design
+  @override
   Widget build(BuildContext context) //Build the widget
   {
+    super.build(context);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -188,7 +190,7 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
                             ),
                           ),
                           
-                          SizedBox(height: 4), //spacing between name and date
+                          const SizedBox(height: 4), //spacing between name and date
                           
                           //Date time string (24 hour)
                           Text(
@@ -332,8 +334,6 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
                               }
                               catch (e) //Catch an error updating likes
                               {
-                                print("Failed to update likes: $e");
-
                                 //revert like if firestore fails
                                 setState(() {
                                   _isLiked = !_isLiked;

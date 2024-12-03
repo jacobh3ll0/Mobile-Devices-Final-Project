@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:md_final/global_widgets/build_bottom_app_bar.dart';
-
 import 'NavigateToSettingsPage.dart';
 
 class ProfilePage extends StatefulWidget
@@ -49,7 +47,12 @@ class ProfilePageState extends State<ProfilePage>
     }
     catch (e) //If it fails to grab the users data, output debug.
     {
-      print("FAILED TO GRAB THE USERS DATA: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to grab user data!"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -193,7 +196,8 @@ class ProfilePageState extends State<ProfilePage>
     );
   }
 
-  _buildSettingsPage() async {
+  _buildSettingsPage() async
+  {
     final result = await Navigator.push( //returns a Grade object
         context,
         MaterialPageRoute(

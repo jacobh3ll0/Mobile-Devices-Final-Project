@@ -18,7 +18,7 @@ class EqualSizedBoxesWithListView extends StatelessWidget {
             itemBuilder: (context, index) {
               return Container(
                 width: (MediaQuery.of(context).size.width / 7) - 8, // Divide screen width into 7
-                margin: EdgeInsets.all(4.0), // Add spacing between purple squares
+                margin: const EdgeInsets.all(4.0), // Add spacing between purple squares
                 decoration: BoxDecoration(
                   color: Colors.purple,
                   borderRadius: BorderRadius.circular(8.0),
@@ -26,19 +26,19 @@ class EqualSizedBoxesWithListView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.circle, color: Colors.black),
-                    SizedBox(height: 4.0), // Space between icon and text
+                    const Icon(Icons.circle, color: Colors.black),
+                    const SizedBox(height: 4.0), // Space between icon and text
                     Text(
                       getDayName(index),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 2.0), // Space between day and number
+                    const SizedBox(height: 2.0), // Space between day and number
                     Text(
                       getDayNumber(index).toString(),
-                      style: TextStyle(color: Colors.black),
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ],
                 ),

@@ -54,7 +54,7 @@ class CreatePostState extends State<CreatePostPage>
         }
       }
     }
-    catch (e) //Handles inability to get user data (shouldnt happen)
+    catch (e) //Handles inability to get user data (should not happen)
     {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -100,7 +100,7 @@ class CreatePostState extends State<CreatePostPage>
   {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create a post'),
+        title: const Text('Create a post'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0), //Padding on all sides for Ascetics
@@ -110,7 +110,7 @@ class CreatePostState extends State<CreatePostPage>
             //Image URL Field
             TextField(
               controller: _imageURLController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Image URL (Optional)',
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
@@ -133,7 +133,7 @@ class CreatePostState extends State<CreatePostPage>
             //Text of post
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Post Details',
                 border: OutlineInputBorder(),
                 enabledBorder: OutlineInputBorder(
@@ -156,7 +156,7 @@ class CreatePostState extends State<CreatePostPage>
 
             //Button to create the post
             ElevatedButton(
-              child: Text('Create Post!'),
+              child: const Text('Create Post!'),
               onPressed: () async
               {
                 //Set the values of the variables based on text entered into to controller text fields
@@ -220,13 +220,13 @@ class CreatePostState extends State<CreatePostPage>
                     builder: (context)
                     {
                       return AlertDialog( //Present an error dialog to the user
-                        title: Text('Invalid Post'),
-                        content: Text('Some required fields missing!'),
+                        title: const Text('Invalid Post'),
+                        content: const Text('Some required fields missing!'),
                         actions: <Widget>[
                           TextButton( //Button for user to close window
-                            child: Text('Close'),
+                            child: const Text('Close'),
                             onPressed: () {
-                              Navigator.pop(context);  //Pop dialog box from naviagation stack
+                              Navigator.pop(context);  //Pop dialog box from navigation stack
                             },
                           ),
                         ],
