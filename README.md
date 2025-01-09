@@ -15,7 +15,6 @@ Mobile Devices Final Project
 This application was designed to be a fitness application that enables users of all kinds to improve their physical health through workout routines, nutritional guides, and association with their friends. There are many thought out features within this application that allow individuals to achieve their fitness goals throughout each and every feature. While not all features of the application are fully built out at his point, we have the fundamentals down as follows,
 
 # Requirements
-according to the rubric posted on slack
 
 ### Multiple screens / navigation
 Implemented with a BottomNavigationBar widget
